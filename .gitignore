@@ -1,5 +1,14 @@
-.venv/
+# Environments
 venv/
+env/
+.env
+
+# Streamlit secrets (VERY IMPORTANT - Do not remove this)
+.streamlit/secrets.toml
+
+# Python cache
 __pycache__/
 *.pyc
+
+# OS generated files
 .DS_Store

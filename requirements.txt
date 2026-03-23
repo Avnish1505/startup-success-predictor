@@ -1,0 +1,11 @@
+streamlit
+scikit-learn
+joblib
+numpy
+pandas
+google-genai
+huggingface_hub
+fastapi
+uvicorn
+requests
+plotly

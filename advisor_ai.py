@@ -1,6 +1,12 @@
 import streamlit as st
 
 def fallback_response(question):
+    """
+    Provides a rule-based fallback response if the AI API fails.
+    
+    Args:
+        question (str): The user's query.
+    """
     q = question.lower()
 
     if "funding" in q:
@@ -12,13 +18,19 @@ def fallback_response(question):
 
 
 def startup_advice(question):
-
-    # 1️⃣ Try Gemini
+    """
+    Fetches startup advice from the Google Gemini AI model.
+    Falls back to a basic response mechanism upon failure.
+    
+    Args:
+        question (str): The user's startup-related query.
+    """
     try:
         from google import genai
 
-        api_key = st.secrets.get("GEMINI_API_KEY")
-        if not api_key:
+        if "GEMINI_API_KEY" in st.secrets:
+            api_key = st.secrets["GEMINI_API_KEY"]
+        else:
             return "⚠️ API Key missing in Streamlit secrets."
 
         client = genai.Client(api_key=api_key)
@@ -27,22 +39,8 @@ def startup_advice(question):
             model="gemini-2.0-flash",
             contents=question
         )
-
         return response.text
 
     except Exception as e:
-        print("Gemini failed:", e)
-
-    # 2️⃣ Try HuggingFace
-    try:
-        from huggingface_hub import InferenceClient
-
-        client = InferenceClient("mistralai/Mistral-7B-Instruct-v0.1")
-
-        return client.text_generation(question, max_new_tokens=200)
-
-    except Exception as e:
-        print("HF failed:", e)
-
-    # 3️⃣ Final fallback
-    return fallback_response(question)
+        # Log error to UI and provide a fallback response upon API failure
+        return f"⚠️ **Gemini AI Error:** {e}\n\n💡 *Basic Advice:* {fallback_response(question)}"
