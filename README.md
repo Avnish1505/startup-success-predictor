@@ -2,7 +2,7 @@
 
 *Data-driven insights and Generative AI to evaluate, predict, and scale the next big unicorn.*
 
-[![Live Demo](https://img.shields.io/badge/Demo-Live_App-success?style=for-the-badge&logo=streamlit)](#) <!-- Add your live link here -->
+[![Live Demo](https://img.shields.io/badge/Demo-Live_App-success?style=for-the-badge&logo=streamlit)](https://startup-success-predictor-d5u63hesntzh5ayhsm64ds.streamlit.app/) 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue?style=for-the-badge&logo=python)](#)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?style=for-the-badge&logo=fastapi)](#)
 
@@ -52,7 +52,7 @@ Unlike standard ML projects that stop at a binary "Pass/Fail" prediction, this a
 
 *(Add screenshots of your UI here)*
 
-> **[Insert Link to Live Streamlit App Here]**
+> **[Live Streamlit App: Startup Success Predictor](https://startup-success-predictor-d5u63hesntzh5ayhsm64ds.streamlit.app/)**
 
 ## ⚙️ Installation & Setup
 
