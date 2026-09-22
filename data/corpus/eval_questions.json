@@ -1,0 +1,82 @@
+[
+  {
+    "question": "Why do startups run out of cash?",
+    "expected_chunk_ids": ["why_startups_fail::running_out_of_cash_is_the_proximate_cause,_not_the_root_cause"]
+  },
+  {
+    "question": "What are the root causes behind startup failure besides running out of money?",
+    "expected_chunk_ids": ["why_startups_fail::the_root_causes_behind_the_cash_crunch"]
+  },
+  {
+    "question": "Does the timing of macro conditions affect which sectors of startups fail?",
+    "expected_chunk_ids": ["why_startups_fail::timing_and_sector_effects"]
+  },
+  {
+    "question": "How does this project's closed label relate to the actual reasons startups fail?",
+    "expected_chunk_ids": ["why_startups_fail::relevance_to_this_project's_dataset"]
+  },
+  {
+    "question": "What is the difference between pre-seed and seed funding?",
+    "expected_chunk_ids": ["funding_stages::pre-seed_and_seed"]
+  },
+  {
+    "question": "What happens during a Series A or Series B funding round?",
+    "expected_chunk_ids": ["funding_stages::series_a_through_c"]
+  },
+  {
+    "question": "Do all startups raise funding all the way through Series C and beyond?",
+    "expected_chunk_ids": ["funding_stages::beyond_series_c"]
+  },
+  {
+    "question": "Does this project's dataset record which funding stage each round belongs to?",
+    "expected_chunk_ids": ["funding_stages::relevance_to_this_project's_dataset"]
+  },
+  {
+    "question": "What is survivorship bias?",
+    "expected_chunk_ids": ["survivorship_bias::what_survivorship_bias_is"]
+  },
+  {
+    "question": "Why is survivorship bias especially a problem in venture capital and startup data?",
+    "expected_chunk_ids": ["survivorship_bias::why_it_bites_especially_hard_in_startup_and_vc_data"]
+  },
+  {
+    "question": "Does this project's dataset likely undercount real startup failures?",
+    "expected_chunk_ids": ["survivorship_bias::the_specific_mechanism_in_this_project's_dataset"]
+  },
+  {
+    "question": "How much does AUC drop when removing leaky features in the peer-reviewed Crunchbase leakage study?",
+    "expected_chunk_ids": ["model_limitations_leakage_calibration::the_measured_leakage_effect"]
+  },
+  {
+    "question": "Is there independent published research that agrees with this project's own leakage finding?",
+    "expected_chunk_ids": ["model_limitations_leakage_calibration::independent_corroboration_of_this_project's_own_finding"]
+  },
+  {
+    "question": "Does investor reputation actually predict whether a startup will commercially succeed?",
+    "expected_chunk_ids": ["investor_quality_and_traction_gap::a_signal_that_doesn't_transfer_cleanly_to_outcomes"]
+  },
+  {
+    "question": "What kind of signals about a startup does this project's dataset not capture at all?",
+    "expected_chunk_ids": ["investor_quality_and_traction_gap::what_this_dataset_has,_and_what_it_doesn't"]
+  },
+  {
+    "question": "What does it mean for a machine learning model's predicted probabilities to be calibrated?",
+    "expected_chunk_ids": ["probability_calibration::what_calibration_means"]
+  },
+  {
+    "question": "Did calibration actually improve this project's own model's Brier score?",
+    "expected_chunk_ids": ["probability_calibration::relevance_to_this_project's_own_calibration_result"]
+  },
+  {
+    "question": "What's the weather like today?",
+    "expected_chunk_ids": []
+  },
+  {
+    "question": "Can you recommend a good pizza recipe?",
+    "expected_chunk_ids": []
+  },
+  {
+    "question": "What is the capital of France?",
+    "expected_chunk_ids": []
+  }
+]
