@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from src.models.confidence import (
+    bootstrap_confidence_band,
     compute_confidence_bands,
     lookup_confidence_band,
     wilson_score_interval,
@@ -73,3 +74,42 @@ def test_lookup_confidence_band_top_bin_is_closed_at_its_upper_edge():
     ]
     lo, hi = lookup_confidence_band(1.0, bands)
     assert (lo, hi) == (0.71, 0.87)
+
+
+def _synthetic_calibration_data(n=500, seed=0):
+    rng = np.random.default_rng(seed)
+    raw_score = rng.uniform(0, 1, n)
+    label = (rng.uniform(0, 1, n) < raw_score).astype(int)
+    return raw_score, label
+
+
+def test_bootstrap_confidence_band_brackets_the_point_estimate():
+    raw_score, label = _synthetic_calibration_data()
+    from sklearn.isotonic import IsotonicRegression
+    iso = IsotonicRegression(out_of_bounds="clip", y_min=0.0, y_max=1.0)
+    iso.fit(raw_score, label)
+    query_raw = 0.6
+    point = float(iso.predict([query_raw])[0])
+
+    lo, hi = bootstrap_confidence_band(query_raw, raw_score, label, "isotonic", point, n_bootstrap=100)
+    assert lo <= point <= hi
+
+
+def test_bootstrap_confidence_band_is_narrower_with_more_calibration_data():
+    raw_score_small, label_small = _synthetic_calibration_data(n=60, seed=1)
+    raw_score_large, label_large = _synthetic_calibration_data(n=2000, seed=1)
+    from sklearn.isotonic import IsotonicRegression
+    iso_small = IsotonicRegression(out_of_bounds="clip", y_min=0.0, y_max=1.0).fit(raw_score_small, label_small)
+    iso_large = IsotonicRegression(out_of_bounds="clip", y_min=0.0, y_max=1.0).fit(raw_score_large, label_large)
+    point_small = float(iso_small.predict([0.6])[0])
+    point_large = float(iso_large.predict([0.6])[0])
+
+    lo_s, hi_s = bootstrap_confidence_band(0.6, raw_score_small, label_small, "isotonic", point_small, n_bootstrap=100)
+    lo_l, hi_l = bootstrap_confidence_band(0.6, raw_score_large, label_large, "isotonic", point_large, n_bootstrap=100)
+    assert (hi_s - lo_s) > (hi_l - lo_l)
+
+
+def test_bootstrap_confidence_band_raises_if_point_outside_forced_band():
+    raw_score, label = _synthetic_calibration_data()
+    with pytest.raises(AssertionError):
+        bootstrap_confidence_band(0.6, raw_score, label, "isotonic", point_estimate=0.99, n_bootstrap=50)

@@ -10,6 +10,8 @@ from __future__ import annotations
 import math
 
 import numpy as np
+from sklearn.isotonic import IsotonicRegression
+from sklearn.linear_model import LogisticRegression
 
 
 def wilson_score_interval(successes: int, n: int, confidence: float = 0.90) -> tuple[float, float]:
@@ -69,3 +71,60 @@ def lookup_confidence_band(probability: float, bands: list[dict]) -> tuple[float
     # probability outside all bins (shouldn't happen given edges span [0,1]) - clamp to nearest
     closest = min(bands, key=lambda b: min(abs(probability - b["bin_lower"]), abs(probability - b["bin_upper"])))
     return (closest["ci_lower"], closest["ci_upper"])
+
+
+def _fit_calibrator(raw_score: np.ndarray, label: np.ndarray, method: str):
+    if method == "isotonic":
+        return IsotonicRegression(out_of_bounds="clip", y_min=0.0, y_max=1.0).fit(raw_score, label)
+    if method == "sigmoid":
+        model = LogisticRegression()
+        model.fit(raw_score.reshape(-1, 1), label)
+        return model
+    raise ValueError(f"Unknown calibration method: {method}")
+
+
+def _predict_calibrator(calibrator, raw_score_query: float, method: str) -> float:
+    if method == "isotonic":
+        return float(calibrator.predict([raw_score_query])[0])
+    return float(calibrator.predict_proba([[raw_score_query]])[0, 1])
+
+
+def bootstrap_confidence_band(
+    raw_score_query: float,
+    calibration_raw_scores: np.ndarray,
+    calibration_labels: np.ndarray,
+    method: str,
+    point_estimate: float,
+    n_bootstrap: int = 200,
+    confidence: float = 0.90,
+    random_state: int = 42,
+) -> tuple[float, float]:
+    """Resample the calibration split with replacement, refit the calibrator
+    on each resample, and push the SAME fixed raw score for this query
+    through each bootstrap calibrator. Point estimate and interval are both
+    downstream of the same base-model raw score and the same calibration
+    data, so - unlike the static aggregate-bin lookup above - they're built
+    from the same source. This does NOT force the point estimate inside the
+    band artificially: it's a real percentile interval over real bootstrap
+    replicates, and the assertion below is a genuine check, not a tautology
+    - it exists to catch real bugs (e.g. a point estimate computed from a
+    mismatched raw score or calibrator), per "fail loudly rather than
+    rendering an impossible interval."""
+    rng = np.random.default_rng(random_state)
+    n = len(calibration_raw_scores)
+    replicates = np.empty(n_bootstrap)
+    for i in range(n_bootstrap):
+        idx = rng.integers(0, n, size=n)
+        calibrator = _fit_calibrator(calibration_raw_scores[idx], calibration_labels[idx], method)
+        replicates[i] = _predict_calibrator(calibrator, raw_score_query, method)
+
+    alpha = 1 - confidence
+    lower = float(np.quantile(replicates, alpha / 2))
+    upper = float(np.quantile(replicates, 1 - alpha / 2))
+
+    assert lower <= point_estimate <= upper, (
+        f"Confidence band [{lower:.4f}, {upper:.4f}] does not bracket point estimate {point_estimate:.4f} "
+        f"- point_estimate and the bootstrap replicates must come from the same raw score and calibration "
+        f"data; a mismatch here means a real bug upstream, not statistical noise to paper over."
+    )
+    return (lower, upper)
