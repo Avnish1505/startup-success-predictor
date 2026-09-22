@@ -147,6 +147,15 @@ h1, h2, h3, h4 {{
 
 p, span, label, div {{ color: var(--ink); }}
 
+/* the sidebar is a separate DOM subtree that paints its own background
+(Streamlit's native secondaryBackgroundColor) on top of the page - the
+generic html/body/.stApp rule above does not reach it, verified live (it
+stayed light while the rest of the page went dark until this rule was
+added). */
+[data-testid="stSidebar"], [data-testid="stSidebar"] > div {{
+    background: var(--surface) !important;
+}}
+
 /* status strip */
 .status-strip {{
     display: flex;

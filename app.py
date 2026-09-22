@@ -8,6 +8,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+import streamlit.components.v1 as components
 
 import analytics
 import theme
@@ -54,8 +55,35 @@ st.set_page_config(
     layout="wide",
 )
 
+if "app_theme" not in st.session_state:
+    try:
+        detected = st.context.theme.type
+    except Exception:
+        detected = None
+    st.session_state["app_theme"] = theme.resolve_initial_theme(detected)
+
 st.markdown(theme.inject_css(), unsafe_allow_html=True)
-theme.register_plotly_template()
+
+with st.sidebar:
+    theme_label = st.radio(
+        "Theme", ["Light", "Dark"],
+        index=0 if st.session_state["app_theme"] == "light" else 1,
+        horizontal=True, key="app_theme_radio",
+    )
+st.session_state["app_theme"] = "dark" if theme_label == "Dark" else "light"
+
+# Stamp [data-theme] onto the top-level <html> from Python-driven state, so
+# the CSS's :root[data-theme="dark"] selector (the explicit-override clause)
+# actually fires. st.markdown-injected <script> tags do not execute (React's
+# dangerouslySetInnerHTML does not run scripts) - a same-origin
+# components.html iframe reaching window.parent.document is the reliable
+# path here, verified live before wiring this in.
+components.html(
+    f"<script>window.parent.document.documentElement.setAttribute('data-theme', '{st.session_state['app_theme']}');</script>",
+    height=0,
+)
+
+theme.register_plotly_template(st.session_state["app_theme"])
 
 models, category_options, population_stats, region_by_country = load_production_artifacts()
 clean_meta, full_meta = models["clean"]["metadata"], models["full"]["metadata"]
