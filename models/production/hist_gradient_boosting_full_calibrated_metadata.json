@@ -1,5 +1,6 @@
 {
   "model_name": "hist_gradient_boosting_full_calibrated",
+  "feature_set": "full",
   "calibration_method": "isotonic",
   "numeric_features": [
     "founded_year",
@@ -20,6 +21,6 @@
   "brier_after": 0.14995793972182964,
   "roc_auc_before": 0.8308011831359158,
   "roc_auc_after": 0.8267371271251138,
-  "git_sha": "dfb10a0561a6d7337925b193cf81e7b9abaf1483",
+  "git_sha": "4fdc260f135286e632ab5bbe97104d006f19a410",
   "git_dirty": true
 }

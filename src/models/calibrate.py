@@ -1,5 +1,8 @@
 """Calibrate the boosted model's raw predict_proba against a held-out split
-that neither the base model nor the test cohort ever saw."""
+that neither the base model nor the test cohort ever saw. Calibrates both
+the clean and full feature sets as separate, namespaced production models -
+the clean one is the default served by app.py/api.py; the full one is kept
+available as an explicit leakage-demonstration toggle."""
 from __future__ import annotations
 
 import json
@@ -7,6 +10,7 @@ from pathlib import Path
 
 import joblib
 import matplotlib
+import numpy as np
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -28,7 +32,11 @@ from src.models.train import ModelSpec, build_pipeline, git_provenance
 DATA_PATH = Path("data/processed/startups_features_v1.parquet")
 PRODUCTION_DIR = Path("models/production")
 FIGURES_DIR = Path("reports/figures")
-MODEL_NAME = "hist_gradient_boosting_full_calibrated"
+
+FEATURE_SETS = {
+    "clean": (schema.CLEAN_NUMERIC_FEATURES, schema.CLEAN_CATEGORICAL_FEATURES),
+    "full": (schema.FULL_NUMERIC_FEATURES, schema.FULL_CATEGORICAL_FEATURES),
+}
 
 
 def choose_calibration_method(n_samples: int, threshold: int = 1000) -> str:
@@ -57,20 +65,15 @@ def _plot_reliability(y_true, y_proba, title: str, brier: float, out_path: Path)
     plt.close(fig)
 
 
-def main() -> None:
-    df = pd.read_parquet(DATA_PATH)
-    train_df, test_df = df[df["split"] == "train"], df[df["split"] == "test"]
-
-    train_fit, calibration = split_train_for_calibration(train_df)
-    method = choose_calibration_method(len(calibration))
-    print(f"train_fit={len(train_fit)} calibration={len(calibration)} -> method={method}")
+def _calibrate_one(feature_set_name: str, train_fit, calibration, test_df, method: str) -> dict:
+    numeric_features, categorical_features = FEATURE_SETS[feature_set_name]
+    feature_cols = numeric_features + categorical_features
+    model_name = f"hist_gradient_boosting_{feature_set_name}_calibrated"
 
     spec = ModelSpec(
-        "hist_gradient_boosting_full_base", HistGradientBoostingClassifier(random_state=42),
-        schema.FULL_NUMERIC_FEATURES, schema.FULL_CATEGORICAL_FEATURES, "ordinal", "full", needs_scaling=False,
+        f"hist_gradient_boosting_{feature_set_name}_base", HistGradientBoostingClassifier(random_state=42),
+        numeric_features, categorical_features, "ordinal", feature_set_name, needs_scaling=False,
     )
-    feature_cols = spec.numeric_features + spec.categorical_features
-
     base_pipeline = build_pipeline(spec)
     base_pipeline.fit(train_fit[feature_cols], train_fit["label"])
 
@@ -83,32 +86,41 @@ def main() -> None:
 
     metrics_before = compute_metrics(y_test, proba_before, threshold=0.5)
     metrics_after = compute_metrics(y_test, proba_after, threshold=0.5)
-    print(f"Brier before calibration: {metrics_before['brier_score']:.4f}")
-    print(f"Brier after calibration:  {metrics_after['brier_score']:.4f}")
+    print(f"[{feature_set_name}] Brier before: {metrics_before['brier_score']:.4f}  after: {metrics_after['brier_score']:.4f}")
+    print(f"[{feature_set_name}] Test ROC-AUC before: {metrics_before['roc_auc']:.4f}  after: {metrics_after['roc_auc']:.4f}")
+
+    _plot_reliability(y_test, proba_before, f"Reliability [{feature_set_name}] - before calibration",
+                       metrics_before["brier_score"], FIGURES_DIR / f"calibration_before_{feature_set_name}.png")
+    _plot_reliability(y_test, proba_after, f"Reliability [{feature_set_name}] - after calibration",
+                       metrics_after["brier_score"], FIGURES_DIR / f"calibration_after_{feature_set_name}.png")
 
     PRODUCTION_DIR.mkdir(parents=True, exist_ok=True)
+    joblib.dump(calibrated_pipeline, PRODUCTION_DIR / f"{model_name}.joblib")
+    joblib.dump(base_pipeline, PRODUCTION_DIR / f"{model_name}_base.joblib")
+
+    train_all = pd.concat([train_fit, calibration])
+    train_scores = calibrated_pipeline.predict_proba(train_all[feature_cols])[:, 1]
+    save_reference_distribution(build_reference_distribution(train_scores), PRODUCTION_DIR / f"{model_name}_train_score_distribution.npy")
+
     confidence_bands = compute_confidence_bands(y_test, proba_after, n_bins=10)
-    (PRODUCTION_DIR / "confidence_bands.json").write_text(json.dumps(confidence_bands, indent=2))
-    print(f"Wrote {len(confidence_bands)} confidence bands")
+    (PRODUCTION_DIR / f"{model_name}_confidence_bands.json").write_text(json.dumps(confidence_bands, indent=2))
 
-    _plot_reliability(y_test, proba_before, "Reliability - before calibration",
-                       metrics_before["brier_score"], FIGURES_DIR / "calibration_before.png")
-    _plot_reliability(y_test, proba_after, "Reliability - after calibration",
-                       metrics_after["brier_score"], FIGURES_DIR / "calibration_after.png")
-
-    train_scores = calibrated_pipeline.predict_proba(train_df[feature_cols])[:, 1]
-    reference = build_reference_distribution(train_scores)
-
-    PRODUCTION_DIR.mkdir(parents=True, exist_ok=True)
-    joblib.dump(calibrated_pipeline, PRODUCTION_DIR / f"{MODEL_NAME}.joblib")
-    joblib.dump(base_pipeline, PRODUCTION_DIR / f"{MODEL_NAME}_base.joblib")
-    save_reference_distribution(reference, PRODUCTION_DIR / "train_score_distribution.npy")
+    # Raw (pre-calibration) score + label for every calibration-split row, so
+    # the bootstrap confidence band (src/models/confidence.py) can refit
+    # calibrators at request time without needing the base model or the full
+    # dataset - just these two arrays.
+    calibration_raw_scores = base_pipeline.predict_proba(calibration[feature_cols])[:, 1]
+    np.savez(
+        PRODUCTION_DIR / f"{model_name}_calibration_raw_scores.npz",
+        raw_score=calibration_raw_scores, label=calibration["label"].to_numpy(),
+    )
 
     metadata = {
-        "model_name": MODEL_NAME,
+        "model_name": model_name,
+        "feature_set": feature_set_name,
         "calibration_method": method,
-        "numeric_features": spec.numeric_features,
-        "categorical_features": spec.categorical_features,
+        "numeric_features": numeric_features,
+        "categorical_features": categorical_features,
         "n_train_fit": int(len(train_fit)),
         "n_calibration": int(len(calibration)),
         "n_test": int(len(test_df)),
@@ -118,8 +130,22 @@ def main() -> None:
         "roc_auc_after": metrics_after["roc_auc"],
         **git_provenance(),
     }
-    (PRODUCTION_DIR / f"{MODEL_NAME}_metadata.json").write_text(json.dumps(metadata, indent=2))
-    print(f"Wrote production artifacts to {PRODUCTION_DIR}/")
+    (PRODUCTION_DIR / f"{model_name}_metadata.json").write_text(json.dumps(metadata, indent=2))
+    print(f"Wrote {model_name} artifacts to {PRODUCTION_DIR}/")
+    return metadata
+
+
+def main() -> None:
+    df = pd.read_parquet(DATA_PATH)
+    train_df, test_df = df[df["split"] == "train"], df[df["split"] == "test"]
+    train_fit, calibration = split_train_for_calibration(train_df)
+    method = choose_calibration_method(len(calibration))
+    print(f"train_fit={len(train_fit)} calibration={len(calibration)} -> method={method}")
+
+    clean_meta = _calibrate_one("clean", train_fit, calibration, test_df, method)
+    full_meta = _calibrate_one("full", train_fit, calibration, test_df, method)
+
+    print(f"Clean-vs-full test AUC gap (calibrated): {full_meta['roc_auc_after'] - clean_meta['roc_auc_after']:.4f}")
 
 
 if __name__ == "__main__":
