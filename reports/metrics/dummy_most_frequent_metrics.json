@@ -1,0 +1,27 @@
+{
+  "roc_auc": 0.5,
+  "average_precision": 0.2670924117205109,
+  "brier_score": 0.7329075882794891,
+  "threshold": 0.01,
+  "confusion_matrix": {
+    "tn": 0,
+    "fp": 1951,
+    "fn": 0,
+    "tp": 711
+  },
+  "precision": 0.2670924117205109,
+  "recall": 1.0,
+  "f1": 0.421583160391343,
+  "f0.5": 0.3129676908178537,
+  "positive_rate": 0.2670924117205109,
+  "n": 2662,
+  "calibration": {
+    "mean_predicted": [
+      1.0
+    ],
+    "fraction_positive": [
+      0.2670924117205109
+    ],
+    "n_bins_requested": 10
+  }
+}
