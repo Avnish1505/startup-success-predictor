@@ -82,7 +82,8 @@ cd "Predicting-startup-success-using-AI"
 ### 2. Install Dependencies
 It is recommended to use a virtual environment.
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt          # production runtime only
+pip install -r requirements-dev.txt      # + testing/linting/training/notebook tools
 ```
 
 ### 3. Setup API Keys
