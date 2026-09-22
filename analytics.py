@@ -51,6 +51,13 @@ def show_dashboard() -> None:
     df = _load_dataset()
     overall = df["label"].mean()
     st.metric("Overall success rate", f"{overall:.1%}", help=f"n={len(df):,} labeled companies (operating excluded)")
+    st.caption(
+        f"Coverage: {df['country_code'].notna().sum():,} of {len(df):,} rows have a country "
+        f"({df['country_code'].notna().mean():.1%}), {df['primary_category'].notna().sum():,} have a category "
+        f"({df['primary_category'].notna().mean():.1%}), {df['funding_total_usd_log1p'].notna().sum():,} have "
+        f"funding data ({df['funding_total_usd_log1p'].notna().mean():.1%}). Each chart's own n reflects its "
+        f"column's non-null, n>=30-suppressed rows - the differing totals below are expected, not an error."
+    )
 
     st.subheader("By country")
     by_country = _grouped_success_rate(df, "country_code").head(TOP_N_GROUPS)

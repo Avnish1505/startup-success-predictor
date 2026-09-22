@@ -1477,7 +1477,7 @@ git commit -m "feat(api): default to the clean model, full model opt-in via feat
 **Files:**
 - Modify: `README.md`, `MODEL_CARD.md`, `analytics.py` (coverage note)
 
-- [ ] **Step 1: Add a coverage note to `analytics.py`'s dashboard**
+- [x] **Step 1: Add a coverage note to `analytics.py`'s dashboard**
 
 Right after the `st.metric("Overall success rate", ...)` line in `show_dashboard()`, add:
 ```python
@@ -1491,14 +1491,14 @@ Right after the `st.metric("Overall success rate", ...)` line in `show_dashboard
 ```
 (This computes the real percentages live, matching the acceptance bar of no invented numbers - don't hardcode the 85.1%/91.9%/83.6% figures from planning even though they should reproduce.)
 
-- [ ] **Step 2: Add the USA-concentration sentence to README's Limitations section**
+- [x] **Step 2: Add the USA-concentration sentence to README's Limitations section**
 
 Find the existing "Missing feature families" Limitations bullet and add a new bullet right after the "Survivorship bias" one:
 ```markdown
 - **Geographic concentration:** USA accounts for 8,172 of the 10,632 rows shown in the country-breakdown chart (76.9%, computed live in the Analytics tab) - this is effectively a US-centric model; success-rate patterns for other countries rest on much smaller samples.
 ```
 
-- [ ] **Step 3: Update MODEL_CARD.md with the real clean-model-default numbers**
+- [x] **Step 3: Update MODEL_CARD.md with the real clean-model-default numbers**
 
 Add a new section after the existing metrics table, using the real `roc_auc_after`/`brier_after` values Task 1 printed for both `clean` and `full` calibrated models:
 ```markdown
@@ -1511,13 +1511,13 @@ available as an explicit, labeled "leakage demonstration" toggle in the app and 
 in the API (which then requires the three leaky funding fields) - never the silent default.
 ```
 
-- [ ] **Step 4: Re-run the retrieval eval and the screenshot capture, since the UI changed substantially**
+- [x] **Step 4: Re-run the retrieval eval and the screenshot capture, since the UI changed substantially**
 
 Run: `python3 scripts/run_retrieval_eval.py` (confirms Task 5-7's router work didn't change retrieval-layer numbers - it shouldn't, since `MIN_RETRIEVAL_SCORE` and the retrieval/rerank code are untouched, but verify rather than assume).
 
 Re-capture `docs/screenshots/predictor_form.png`, `predictor_result.png`, `analytics.png`, `advisor.png` using the same Playwright approach as the prior session (start the app, drive it with a script, screenshot at 375px width) - the Predictor tab now has the model toggle and both-AUC line, the Advisor tab now shows table-rendered contributions and the raw score line, so the old screenshots are stale.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add analytics.py README.md MODEL_CARD.md docs/screenshots/

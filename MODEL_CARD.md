@@ -47,6 +47,14 @@ Every non-dummy model's **test ROC-AUC is higher than its CV ROC-AUC mean** (e.g
 
 Both model families lose roughly 3.6-4.7 ROC-AUC points when `funding_total_usd_log1p`, `funding_rounds`, and `funding_span_days` are removed — consistent with the diagnostic probe in `DATA_CARD.md` (0.0474 measured there with a similar logistic-regression setup on Step 1's data pipeline). **This is the finding, not an artifact**: those three columns are recorded at scrape time, after the outcome (acquisition, IPO, or closure) is already known, so a portion of the "full" model's apparent skill is unavailable in any real forward-looking use case. The clean model — weaker, and honestly so — is the only one of the two that answers the question "can we predict this company's outcome from information available early in its life."
 
+## Production default: clean, not full
+
+The deployed app and API default to the **clean-feature calibrated model**, not the full one, even
+though the full model's test AUC is higher - see `DATA_CARD.md`'s leakage finding. Measured (calibrated)
+test ROC-AUC: clean `0.7968`, full `0.8267` (Brier: clean `0.1645`, full `0.1500`). The full model remains
+available as an explicit, labeled "leakage demonstration" toggle in the app and via `feature_set="full"`
+in the API (which then requires the three leaky funding fields) - never the silent default.
+
 ## Context against external benchmarks
 
 The spec that produced this model card cited published work reporting ROC-AUC around 0.86 on 34,000 Crunchbase companies, and benchmarks at a 0.78% positive rate treating F0.5 = 0.097 as a good result. **Neither is directly comparable to the numbers above.** Our labeled set is 13,334 rows (34k companies with a labelable, non-`operating` status was not what we observed here), and our test-cohort positive rate is 26.71% — two orders of magnitude higher than 0.78%. A dataset that imbalanced makes even a small positive predictive value look impressive relative to the floor; ours is far less imbalanced, so direct comparison of raw AUC or F0.5 values across the two settings would be misleading. Our `logistic_regression_full` test ROC-AUC of 0.8496 lands in the same neighborhood as the cited 0.86, which is a reasonable sanity check that nothing here is obviously broken — but it is not evidence of matching that study's setup, sample, or label definition.
