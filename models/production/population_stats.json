@@ -1,0 +1,93 @@
+{
+  "numeric_ranges": {
+    "founded_year": {
+      "min": 1901.0,
+      "max": 2011.0
+    },
+    "time_to_first_funding_days": {
+      "min": -5022.0,
+      "max": 41147.0
+    },
+    "funding_total_usd_log1p": {
+      "min": 1.0986122886681098,
+      "max": 24.127109813318413
+    },
+    "funding_rounds": {
+      "min": 1.0,
+      "max": 18.0
+    },
+    "funding_span_days": {
+      "min": 0.0,
+      "max": 17287.0
+    }
+  },
+  "categorical_top": {
+    "country_code": [
+      "USA",
+      "GBR",
+      "CAN",
+      "ISR",
+      "CHN",
+      "FRA",
+      "DEU",
+      "IND",
+      "ESP",
+      "RUS",
+      "SWE",
+      "NLD",
+      "AUS",
+      "BRA",
+      "IRL",
+      "SGP",
+      "CHE",
+      "JPN",
+      "DNK",
+      "ITA"
+    ],
+    "region": [
+      "SF Bay Area",
+      "Boston",
+      "New York City",
+      "Los Angeles",
+      "London",
+      "Seattle",
+      "San Diego",
+      "Washington, D.C.",
+      "Austin",
+      "Chicago",
+      "Denver",
+      "Newark",
+      "Tel Aviv",
+      "Atlanta",
+      "Anaheim",
+      "Philadelphia",
+      "Toronto",
+      "Dallas",
+      "Paris",
+      "Raleigh"
+    ],
+    "primary_category": [
+      "Biotechnology",
+      "Software",
+      "Curated Web",
+      "Advertising",
+      "Mobile",
+      "Enterprise Software",
+      "E-Commerce",
+      "Games",
+      "Health Care",
+      "Clean Technology",
+      "Analytics",
+      "Hardware + Software",
+      "Semiconductors",
+      "Finance",
+      "Security",
+      "Web Hosting",
+      "Cloud Computing",
+      "Health and Wellness",
+      "Social Media",
+      "Internet"
+    ]
+  },
+  "train_base_rate": 0.5982946026986506
+}

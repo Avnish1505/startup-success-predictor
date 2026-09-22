@@ -5,7 +5,11 @@ env/
 .env
 
 # Generated data (regenerate with: python -m src.data.build)
-data/processed/
+# startups_features_v1.parquet is committed: the deployed app's Analytics tab
+# and partial-dependence panel need it at runtime and can't regenerate
+# Kaggle-credentialed data at deploy time.
+data/processed/*
+!data/processed/startups_features_v1.parquet
 .pytest_cache/
 
 # Generated model artifacts (regenerate with: python -m src.models.train)
