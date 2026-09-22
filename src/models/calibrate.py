@@ -17,6 +17,7 @@ from sklearn.frozen import FrozenEstimator
 from sklearn.model_selection import train_test_split
 
 from src.data import schema
+from src.models.confidence import compute_confidence_bands
 from src.models.evaluate import calibration_curve_data, compute_metrics
 from src.models.percentile import (
     build_reference_distribution,
@@ -84,6 +85,11 @@ def main() -> None:
     metrics_after = compute_metrics(y_test, proba_after, threshold=0.5)
     print(f"Brier before calibration: {metrics_before['brier_score']:.4f}")
     print(f"Brier after calibration:  {metrics_after['brier_score']:.4f}")
+
+    PRODUCTION_DIR.mkdir(parents=True, exist_ok=True)
+    confidence_bands = compute_confidence_bands(y_test, proba_after, n_bins=10)
+    (PRODUCTION_DIR / "confidence_bands.json").write_text(json.dumps(confidence_bands, indent=2))
+    print(f"Wrote {len(confidence_bands)} confidence bands")
 
     _plot_reliability(y_test, proba_before, "Reliability - before calibration",
                        metrics_before["brier_score"], FIGURES_DIR / "calibration_before.png")
