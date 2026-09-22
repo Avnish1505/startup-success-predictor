@@ -44,3 +44,12 @@ costs of the TF-IDF choice made for memory-budget reasons (see the README's AI A
 in venture capital and startup data?"* - lands at rank 4 (score 0.109, just behind three higher-scoring
 chunks from other documents), missing k=3 but recovered at k=5. This is ordinary top-k ranking noise on
 a 21-chunk corpus, not a separate bug.
+
+## Router (item 5, this session)
+
+`src/advisor/router.py` now classifies every question into one of four intents before this retrieval
+layer even runs: `general` questions reach retrieval as before (unaffected - the recall numbers above
+are unchanged after adding the router); `greeting`/`about_prediction`/`out_of_scope` questions are
+answered without touching retrieval at all. "hi" never reached this layer in the first place even
+before the router (MIN_RETRIEVAL_SCORE already filtered it to nothing), but the router now also stops
+it from triggering the facts-bundle dump it used to cause - see README's AI Advisor section.

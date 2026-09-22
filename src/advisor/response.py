@@ -1,20 +1,27 @@
-"""Orchestrates Layer 1 (facts) + Layer 2 (retrieval) into one rendered
-response. No network call anywhere in this module."""
+"""Orchestrates the router (Layer 0) + Layer 1 (facts) + Layer 2 (retrieval)
+into one rendered response. No network call anywhere in this module."""
 from __future__ import annotations
 
 from src.advisor.facts import render_facts_bundle
 from src.advisor.retrieval import AdvisorIndex, mmr_rerank, retrieve
+from src.advisor.router import classify_intent, find_named_feature
 
 RETRIEVAL_TOP_K = 8
 RERANK_K = 3
 # Measured, not guessed: across the 20-question eval set (RETRIEVAL_EVAL.md),
 # every in-corpus question's top score was >= 0.167 and every deliberately
 # out-of-corpus question's top score was <= 0.150 - a real gap. 0.15 sits in
-# that gap with a small margin. This is calibrated against a 20-question set,
-# not a law of nature; it may not generalize to every possible off-topic
-# query, but it beats returning a confident-looking answer to "what's the
-# capital of France" with no cutoff at all.
+# that gap with a small margin.
 MIN_RETRIEVAL_SCORE = 0.15
+
+CAPABILITY_STATEMENT = (
+    "## What I can answer\n"
+    "- Questions about your last prediction (\"why is my score low\", \"what hurts my score\").\n"
+    "- General questions about startup fundraising and failure (\"why do startups fail\", \"what is a Series A\").\n"
+    "- Questions about this model's own limitations (leakage, calibration, survivorship bias).\n"
+    "I don't generate free-form advice - answers are grounded in your prediction's real numbers or in the "
+    "cited local corpus, never invented."
+)
 
 
 def _retrieve_and_rerank(question: str, index: AdvisorIndex) -> list:
@@ -30,35 +37,42 @@ def _retrieve_and_rerank(question: str, index: AdvisorIndex) -> list:
     return mmr_rerank(query_vector, candidates, k=RERANK_K)
 
 
+def _render_retrieved(retrieved: list) -> str:
+    if not retrieved:
+        return "## Related context\nNothing in the local corpus matched this question."
+    lines = ["## Related context"]
+    for chunk in retrieved:
+        lines.append(f"- **{chunk.heading}** ({chunk.doc_id}): {chunk.text}")
+        lines.append(f"  Source: {chunk.source_url}")
+    return "\n".join(lines)
+
+
 def build_advisor_response(question: str, facts_bundle: dict | None, index: AdvisorIndex) -> str:
-    sections = []
+    intent = classify_intent(question)
 
-    if facts_bundle is not None:
-        sections.append(render_facts_bundle(facts_bundle))
-    else:
-        sections.append(
-            "## What the model says\n"
-            "No prediction yet this session - run one in the Predictor tab first "
-            "for calibrated-probability, SHAP, and percentile context."
-        )
+    if intent == "greeting":
+        return CAPABILITY_STATEMENT
 
-    retrieved = _retrieve_and_rerank(question, index)
-    if retrieved:
-        lines = ["## Related context"]
-        for chunk in retrieved:
-            lines.append(f"- **{chunk.heading}** ({chunk.doc_id}): {chunk.text}")
-            lines.append(f"  Source: {chunk.source_url}")
-        sections.append("\n".join(lines))
-    else:
-        sections.append("## Related context\nNothing in the local corpus matched this question.")
+    if intent == "about_prediction":
+        if facts_bundle is None:
+            return (
+                "## No prediction yet\n"
+                "I don't have a prediction to explain yet this session. Go to the **Predictor** tab, "
+                "fill in a profile, and click Predict - then come back and ask again."
+            )
+        foreground = find_named_feature(question)
+        return render_facts_bundle(facts_bundle, foreground_feature=foreground)
 
-    if facts_bundle is None and not retrieved:
-        sections.append(
-            "\nThis question falls outside both the facts core and the local corpus - "
-            "I don't have a grounded answer for it."
-        )
+    if intent == "general":
+        retrieved = _retrieve_and_rerank(question, index)
+        return _render_retrieved(retrieved)
 
-    return "\n\n".join(sections)
+    # out_of_scope
+    return (
+        "## Outside what I can answer\n"
+        "That doesn't match a prediction question, a startup/fundraising topic in the local corpus, "
+        "or a question about this model's limitations.\n\n" + CAPABILITY_STATEMENT
+    )
 
 
 def generate_response(facts_bundle: dict | None, retrieved_chunks: list, question: str) -> str:
