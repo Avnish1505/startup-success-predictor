@@ -1,7 +1,5 @@
 """Generate notebooks/01_baselines.ipynb, then execute it in place so it
 carries real outputs (not just unexecuted code)."""
-from pathlib import Path
-
 import nbformat as nbf
 from nbclient import NotebookClient
 

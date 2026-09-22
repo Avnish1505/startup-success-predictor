@@ -1,0 +1,149 @@
+[
+  {
+    "chunk_id": "funding_stages::pre-seed_and_seed",
+    "doc_id": "funding_stages",
+    "heading": "Pre-Seed and Seed",
+    "text": "Pre-seed is the earliest stage of outside capital, typically from founders themselves, friends and family, and occasionally an angel investor or accelerator - it funds building toward a minimum viable product, not scaling a proven one. Seed is usually the first *official* equity round: the company has something closer to a working product, and the round is raised to find product-market fit and initial paying customers rather than to scale an already-validated model.",
+    "source_url": "https://www.startups.com/articles/series-funding-a-b-c-d-e"
+  },
+  {
+    "chunk_id": "funding_stages::series_a_through_c",
+    "doc_id": "funding_stages",
+    "heading": "Series A Through C",
+    "text": "Series A is typically the first round led by an institutional venture capital firm, with a formal valuation and often a board seat for the lead investor; it is generally raised to scale a business model that has shown early signs of working, not to discover whether it works at all. Series B is an expansion round, raised once the model is proven and the task shifts to scaling operations and market reach. Series C is later-stage capital, often earmarked for international expansion, acquisitions, or preparing for an IPO. Round sizes climb substantially at each stage, though the exact dollar ranges vary a great deal by sector and era and shouldn't be treated as fixed thresholds.",
+    "source_url": "https://www.startups.com/articles/series-funding-a-b-c-d-e"
+  },
+  {
+    "chunk_id": "funding_stages::beyond_series_c",
+    "doc_id": "funding_stages",
+    "heading": "Beyond Series C",
+    "text": "Companies don't follow a fixed checklist through these stages. Many raise through Series D, E, or beyond; many stop at Series B and are acquired; some skip stages entirely via a large early round; some never raise institutional venture capital at all and are invisible to a Crunchbase-style dataset by construction. The labels \"Series A,\" \"Series B,\" and so on describe a round's position in a company's fundraising history, not a guarantee about where that company is headed next.",
+    "source_url": "https://www.startups.com/articles/series-funding-a-b-c-d-e"
+  },
+  {
+    "chunk_id": "funding_stages::relevance_to_this_project's_dataset",
+    "doc_id": "funding_stages",
+    "heading": "Relevance to This Project's Dataset",
+    "text": "This project's dataset (see `DATA_CARD.md`) has no column recording which named stage (seed, Series A, Series B, ...) any individual funding round belongs to - it only has `funding_rounds` (a count) and `funding_total_usd`/`funding_span_days` (aggregate totals and elapsed time). A company with two rounds could be a seed-and-Series-A story or two large late rounds close together; the dataset cannot distinguish these, which is part of why `funding_rounds` and `funding_total_usd` are, at best, a coarse proxy for \"how far along\" a company's fundraising journey actually is.",
+    "source_url": "https://www.startups.com/articles/series-funding-a-b-c-d-e"
+  },
+  {
+    "chunk_id": "investor_quality_and_traction_gap::investor_and_network_reputation_as_a_signal",
+    "doc_id": "investor_quality_and_traction_gap",
+    "heading": "Investor and Network Reputation as a Signal",
+    "text": "Research published in *Small Business Economics* (Springer Nature) on how third parties assess reputation signals of entrepreneurial teams finds that, under the kind of uncertainty that surrounds a young company, outside observers lean heavily on the prominence and track record of that company's affiliates - its lead investors, board members, and network - to judge its likely quality. Companies backed by prominent, well-regarded investors tend to be assessed more favorably (and, the research suggests, to perform better) than otherwise-comparable companies without such backing. This is a well-established idea in entrepreneurship research: who is willing to put their name and capital behind a company is itself informative, independent of anything about the company's own product or financials.",
+    "source_url": "https://link.springer.com/article/10.1007/s11187-025-01100-8"
+  },
+  {
+    "chunk_id": "investor_quality_and_traction_gap::a_signal_that_doesn't_transfer_cleanly_to_outcomes",
+    "doc_id": "investor_quality_and_traction_gap",
+    "heading": "A Signal That Doesn't Transfer Cleanly to Outcomes",
+    "text": "The same line of research also finds an important nuance: entrepreneurial-team and investor reputation signals matter more for *investment decisions* (whether a company raises money, and from whom) than they do for *actual commercial success* down the line. In other words, a prominent-investor signal reliably predicts who gets funded, but is a weaker, noisier predictor of who ultimately builds a durable, successful business - a mismatch worth keeping in mind whenever \"getting funded by well-known investors\" is used as an implicit stand-in for \"will succeed.\"",
+    "source_url": "https://link.springer.com/article/10.1007/s11187-025-01100-8"
+  },
+  {
+    "chunk_id": "investor_quality_and_traction_gap::what_this_dataset_has,_and_what_it_doesn't",
+    "doc_id": "investor_quality_and_traction_gap",
+    "heading": "What This Dataset Has, and What It Doesn't",
+    "text": "This project's dataset (`DATA_CARD.md`) has `funding_total_usd`, `funding_rounds`, and dates - it has no field identifying *which* investors participated in any round, their track record, or their network position. It similarly has no field capturing product usage, revenue, user growth, or any other direct measure of commercial traction - the closest available proxy is `funding_total_usd` itself, which reflects what investors were willing to commit, not what customers were willing to pay or use. Both investor quality and product traction are, per the research above, meaningfully predictive of startup outcomes and are entirely absent from this dataset's feature set. Any prediction this project's model makes should be read as conditioned only on funding trajectory, timing, and geography/category - not on the two categories of signal (who's backing the company, and how customers are actually responding to it) that a more complete picture of \"is this startup going to succeed\" would need.",
+    "source_url": "https://link.springer.com/article/10.1007/s11187-025-01100-8"
+  },
+  {
+    "chunk_id": "model_limitations_leakage_calibration::a_peer-reviewed_study_on_the_same_scale_of_data",
+    "doc_id": "model_limitations_leakage_calibration",
+    "heading": "A Peer-Reviewed Study on the Same Scale of Data",
+    "text": "\"A Leakage-Controlled, Calibration-First Evaluation of Machine Learning Models for Startup-Outcome Prediction: Evidence from Crunchbase,\" published in *Information* (MDPI) in July 2026, evaluates startup-outcome classifiers under a leakage-controlled, calibration-first protocol on Crunchbase-derived data - including a large dataset of 66,368 firms, the same scale as (and very plausibly drawn from the same public Crunchbase snapshot as) the dataset this project uses (see `DATA_CARD.md`). The paper's motivating concern is explicit: machine learning work on startup outcomes frequently reports accuracy above 0.90, and whether that reflects genuine predictive signal available before the outcome, or a methodological artifact of features that leak information from after the outcome, is \"unclear and consequential for investors, accelerators, and innovation-policy agencies.\"",
+    "source_url": "https://doi.org/10.3390/info17070702"
+  },
+  {
+    "chunk_id": "model_limitations_leakage_calibration::the_measured_leakage_effect",
+    "doc_id": "model_limitations_leakage_calibration",
+    "heading": "The Measured Leakage Effect",
+    "text": "The paper's headline finding: removing outcome-correlated, survivorship-accumulating features lowers the area under the ROC curve by 0.05 to 0.09 on the large (66,368-firm) dataset, with every paired 95% confidence interval excluding zero - i.e. a real, statistically robust effect, not noise. On a smaller, more heavily hand-engineered feature set, the drop was larger still (0.19).",
+    "source_url": "https://doi.org/10.3390/info17070702"
+  },
+  {
+    "chunk_id": "model_limitations_leakage_calibration::independent_corroboration_of_this_project's_own_finding",
+    "doc_id": "model_limitations_leakage_calibration",
+    "heading": "Independent Corroboration of This Project's Own Finding",
+    "text": "This project measured its own clean-vs-full AUC gap directly (`DATA_CARD.md`, `MODEL_CARD.md`): removing `funding_total_usd`, `funding_rounds`, and `funding_span_days` (fields recorded at scrape time, after the outcome is already known) dropped test-set AUC by 0.036-0.047 depending on model family. That is the same direction and a broadly similar order of magnitude to this independently published, peer-reviewed result on a comparably-sized Crunchbase dataset - two separate analyses, on data drawn from the same underlying source, landing on the same qualitative conclusion. That agreement is evidence the leakage effect is real and not an artifact of this project's specific pipeline; it is not proof the two studies used identical features, splits, or labeling rules, and the exact magnitudes should not be treated as directly comparable.",
+    "source_url": "https://doi.org/10.3390/info17070702"
+  },
+  {
+    "chunk_id": "model_limitations_leakage_calibration::what_this_means_for_any_number_this_project_reports",
+    "doc_id": "model_limitations_leakage_calibration",
+    "heading": "What This Means for Any Number This Project Reports",
+    "text": "Any AUC, precision, or recall figure quoting the *full* feature set (as opposed to the *clean* feature set) on this kind of data should be read as an upper bound on real-world, forward-looking predictive performance, not an estimate of it - see `MODEL_CARD.md`'s \"what this model cannot do\" section.",
+    "source_url": "https://doi.org/10.3390/info17070702"
+  },
+  {
+    "chunk_id": "probability_calibration::what_calibration_means",
+    "doc_id": "probability_calibration",
+    "heading": "What Calibration Means",
+    "text": "A classifier's raw predicted probability and a *calibrated* probability are not automatically the same thing. A model is well-calibrated if, among all the times it predicts \"70% chance of the positive class,\" roughly 70% of those cases actually turn out positive. Many classifiers - including gradient-boosted trees - can produce probability-shaped outputs that rank examples correctly (good discrimination, e.g. a strong ROC-AUC) while still being systematically over- or under-confident at the level of the actual numeric probability. `CalibratedClassifierCV`, part of scikit-learn, exists specifically to fix that second problem without touching the first.",
+    "source_url": "https://scikit-learn.org/stable/modules/calibration.html"
+  },
+  {
+    "chunk_id": "probability_calibration::sigmoid_vs._isotonic_calibration",
+    "doc_id": "probability_calibration",
+    "heading": "Sigmoid vs. Isotonic Calibration",
+    "text": "`CalibratedClassifierCV` supports two calibration methods. Sigmoid calibration (Platt scaling) fits a simple logistic curve mapping raw scores to calibrated probabilities - it makes a strong parametric assumption about the shape of the miscalibration, which makes it robust with limited calibration data but less flexible. Isotonic calibration fits an arbitrary non-decreasing step function instead - more flexible, and able to correct more complex miscalibration patterns, but the scikit-learn documentation explicitly cautions that it \"is not advised\" with too few calibration samples (informally, well under 1,000), since with limited data it tends to overfit noise in the calibration set rather than the true underlying miscalibration.",
+    "source_url": "https://scikit-learn.org/stable/modules/calibration.html"
+  },
+  {
+    "chunk_id": "probability_calibration::relevance_to_this_project's_own_calibration_result",
+    "doc_id": "probability_calibration",
+    "heading": "Relevance to This Project's Own Calibration Result",
+    "text": "This project's calibration step (`src/models/calibrate.py`, documented in `MODEL_CARD.md`/`README.md`) used isotonic calibration on 2,135 held-out samples - comfortably above the documentation's rough `<<1000` overfitting-risk floor. Even so, the measured result was that calibration did not improve, and very slightly worsened, the Brier score on the test cohort (0.1433 before, 0.1500 after). This is a real, reported finding, not a bug: `HistGradientBoostingClassifier` is trained with log-loss, which already tends to produce reasonably well-calibrated probabilities out of the box, so there was less room for isotonic calibration to improve on, and with a moderately sized (not huge) calibration set, an unconstrained isotonic step function can add variance without a clear net benefit. The general lesson, independent of this specific project: calibration is worth *measuring*, with a real before/after comparison on held-out data, rather than assumed to help just because it was applied.",
+    "source_url": "https://scikit-learn.org/stable/modules/calibration.html"
+  },
+  {
+    "chunk_id": "survivorship_bias::what_survivorship_bias_is",
+    "doc_id": "survivorship_bias",
+    "heading": "What Survivorship Bias Is",
+    "text": "Survivorship bias is the logical error of concentrating on the people, companies, or data points that \"survived\" some selection process while overlooking those that didn't, typically because the ones that didn't survive are much less visible. The canonical example is analyzing which WWII aircraft returned from missions with bullet damage in certain places, and concluding those places should be reinforced - when the correct conclusion is the opposite, because the planes hit in *other* places are the ones that didn't come back to be counted at all.",
+    "source_url": "https://en.wikipedia.org/wiki/Survivorship_bias"
+  },
+  {
+    "chunk_id": "survivorship_bias::why_it_bites_especially_hard_in_startup_and_vc_data",
+    "doc_id": "survivorship_bias",
+    "heading": "Why It Bites Especially Hard in Startup and VC Data",
+    "text": "Startup and venture capital data is particularly exposed to this failure mode because reporting is largely voluntary and self-selected. Successful companies and funds have every incentive to publicize their numbers; companies that shut down quietly often just stop updating their public profiles rather than formally recording a failure, and funds with weak returns are far less eager to publish them than funds with strong ones. The practical effect is that any dataset built by scraping public company/fund profiles - rather than by tracking a cohort from the moment it was founded, regardless of outcome - will systematically under-represent failures relative to their true frequency.",
+    "source_url": "https://en.wikipedia.org/wiki/Survivorship_bias"
+  },
+  {
+    "chunk_id": "survivorship_bias::the_specific_mechanism_in_this_project's_dataset",
+    "doc_id": "survivorship_bias",
+    "heading": "The Specific Mechanism in This Project's Dataset",
+    "text": "This project's own `DATA_CARD.md` documents exactly this pattern in the underlying Crunchbase-derived dataset: of 66,368 raw company records, 53,034 (74.1%) are `operating` (unresolved, and correctly excluded from the label rather than mislabeled as failures - see `why_startups_fail.md`), and only 6,238 are explicitly `closed`. Given how survivorship bias typically operates, it is very likely that this `closed` count is itself an undercount of true failures, not just a smaller-but-representative sample of them - a company that quietly stops operating without a formal shutdown announcement, or that was never prominent enough to get its status updated, has no natural way to show up as `closed` in this kind of scraped dataset. The practical consequence: any success rate computed from this dataset's `closed` vs. `acquired`/`ipo` split should be read as optimistic relative to the true rate among all companies ever founded, not as a calibrated real-world base rate.",
+    "source_url": "https://en.wikipedia.org/wiki/Survivorship_bias"
+  },
+  {
+    "chunk_id": "why_startups_fail::running_out_of_cash_is_the_proximate_cause,_not_the_root_cause",
+    "doc_id": "why_startups_fail",
+    "heading": "Running Out of Cash Is the Proximate Cause, Not the Root Cause",
+    "text": "CB Insights' analysis of venture-backed company shutdowns (its 2024 update looked at 431 VC-backed companies that shut down since 2023) found that running out of capital is the single most common *reported* reason, showing up in roughly 70% of post-mortems. But CB Insights itself is careful to frame this as the final event, not the underlying problem: a company runs out of cash because something upstream of the cash position went wrong first. Treating \"ran out of money\" as an explanation is like treating \"the patient stopped breathing\" as a cause of death - technically true, and not what anyone actually wants to know.",
+    "source_url": "https://www.cbinsights.com/research/report/startup-failure-reasons-top/"
+  },
+  {
+    "chunk_id": "why_startups_fail::the_root_causes_behind_the_cash_crunch",
+    "doc_id": "why_startups_fail",
+    "heading": "The Root Causes Behind the Cash Crunch",
+    "text": "Digging past the proximate cause, CB Insights' more recent analysis attributes failures to poor product-market fit (about 43% of cases), bad timing or macro conditions (about 29%), and unsustainable unit economics (about 19%) - and it explicitly notes that these overlap, so the percentages don't sum to 100% and a single company's failure usually has more than one contributing cause. An earlier CB Insights study, looking across a broader historical sample, put \"no market need\" as the single largest identified cause at around 42%.",
+    "source_url": "https://www.cbinsights.com/research/report/startup-failure-reasons-top/"
+  },
+  {
+    "chunk_id": "why_startups_fail::timing_and_sector_effects",
+    "doc_id": "why_startups_fail",
+    "heading": "Timing and Sector Effects",
+    "text": "CB Insights also found that bad timing or unfavorable macro conditions drove a disproportionate share of failures in sectors that attracted heavy capital during a hype cycle that didn't pan out - climate & energy, food & agriculture, and blockchain companies funded heavily in 2021-2022 are cited as examples. This matters for interpreting any dataset of startup outcomes: a company's failure is not purely a function of its own execution, but also of when and into what market conditions it happened to be founded and funded.",
+    "source_url": "https://www.cbinsights.com/research/report/startup-failure-reasons-top/"
+  },
+  {
+    "chunk_id": "why_startups_fail::relevance_to_this_project's_dataset",
+    "doc_id": "why_startups_fail",
+    "heading": "Relevance to This Project's Dataset",
+    "text": "This project's `closed` label (see `DATA_CARD.md`) is a blunt instrument next to CB Insights' taxonomy: it records that a company stopped operating, not *why*. None of \"poor product-market fit,\" \"bad timing,\" or \"unsustainable unit economics\" are features anywhere in this dataset - the model can only see funding history, timing, and geography/category, which are, at best, weak proxies for some of these causes and silent on others (product-market fit and unit economics in particular are not observable from Crunchbase-style data at all).",
+    "source_url": "https://www.cbinsights.com/research/report/startup-failure-reasons-top/"
+  }
+]
