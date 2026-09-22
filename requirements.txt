@@ -9,3 +9,6 @@ fastapi
 uvicorn
 requests
 plotly
+kagglehub
+pyarrow
+pytest
