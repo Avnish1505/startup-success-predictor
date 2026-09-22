@@ -1,7 +1,23 @@
 # Environments
 venv/
+.venv/
 env/
 .env
+
+# Generated data (regenerate with: python -m src.data.build)
+# startups_features_v1.parquet is committed: the deployed app's Analytics tab
+# and partial-dependence panel need it at runtime and can't regenerate
+# Kaggle-credentialed data at deploy time.
+data/processed/*
+!data/processed/startups_features_v1.parquet
+.pytest_cache/
+
+# Generated model artifacts (regenerate with: python -m src.models.train)
+# models/production/ is committed: the deployed app needs it at runtime and
+# can't regenerate Kaggle-credentialed data at deploy time.
+/models/*
+!/models/production/
+.ipynb_checkpoints/
 
 # Streamlit secrets (VERY IMPORTANT - Do not remove this)
 .streamlit/secrets.toml
@@ -12,3 +28,5 @@ __pycache__/
 
 # OS generated files
 .DS_Store
+# Salesforce CLI
+.sf/

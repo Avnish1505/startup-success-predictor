@@ -1,0 +1,15 @@
+[theme]
+base = "light"
+font = "monospace"
+
+[theme.light]
+backgroundColor = "#FEFEFE"
+secondaryBackgroundColor = "#F2F1EC"
+textColor = "#0b0b0b"
+primaryColor = "#3355FF"
+
+[theme.dark]
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#171A21"
+textColor = "#ffffff"
+primaryColor = "#3355FF"

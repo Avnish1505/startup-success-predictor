@@ -1,0 +1,23 @@
+{
+  "model_name": "hist_gradient_boosting_clean_calibrated",
+  "feature_set": "clean",
+  "calibration_method": "isotonic",
+  "numeric_features": [
+    "founded_year",
+    "time_to_first_funding_days"
+  ],
+  "categorical_features": [
+    "country_code",
+    "region",
+    "primary_category"
+  ],
+  "n_train_fit": 8537,
+  "n_calibration": 2135,
+  "n_test": 2662,
+  "brier_before": 0.15980832642779189,
+  "brier_after": 0.16452413080466569,
+  "roc_auc_before": 0.7993981953068173,
+  "roc_auc_after": 0.7968487435849191,
+  "git_sha": "4fdc260f135286e632ab5bbe97104d006f19a410",
+  "git_dirty": true
+}
