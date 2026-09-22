@@ -12,3 +12,9 @@ plotly
 kagglehub
 pyarrow
 pytest
+matplotlib
+shap
+nbformat
+nbclient
+ipykernel
+nbconvert
