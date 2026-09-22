@@ -56,7 +56,7 @@ Note the large positive-rate drop from train (59.8%) to test (26.7%). This is ex
 
 164 of 13,334 labeled rows (1.2%) have the processed `founded_year` < 1980, down to a minimum of 1901 (`python -m src.data.build` prints this count). Checked for a placeholder-value pattern — a suspicious spike at a round number, e.g. many rows all reading exactly 1900 or 1901 — and **found none**: the full sorted list of sub-1980 years is smoothly and sparsely distributed (1901, 1902, 1903, 1906, 1908, ... 1979, each appearing 1-2 times), consistent with a small number of genuinely old companies still tracked in Crunchbase, not a data-entry artifact. **Decision: keep them** — they appear to be real data, not placeholders.
 
-Consequence acted on elsewhere: `app.py`'s sensitivity (partial-dependence) sweep clips its `founded_year` range to the 1st-99th percentile of the training cohort rather than the full min-max, because a sweep through years supported by only 1-2 training rows is unreliable to display as authoritative regardless of whether those rows are genuine.
+Consequence acted on elsewhere: `app.py`'s sensitivity (partial-dependence) sweep clips its `founded_year` range to the 1st-99th percentile of the training cohort rather than the full min-max, because a sweep through years supported by only 1-2 training rows is unreliable to display as authoritative regardless of whether those rows are genuine. Measured p01/p99 for `founded_year` (train split): **1972.0 / 2011.0** - note the real p01 is 1972, not 1980, so `app.py` additionally floors this one feature's sweep at 1980 on top of the percentile clip (a real discrepancy between "clip to 1st-99th percentile" and "no pre-1980 years" worth flagging explicitly rather than silently picking one).
 
 ## Column notes
 
