@@ -8,6 +8,10 @@ env/
 data/processed/
 .pytest_cache/
 
+# Generated model artifacts (regenerate with: python -m src.models.train)
+/models/
+.ipynb_checkpoints/
+
 # Streamlit secrets (VERY IMPORTANT - Do not remove this)
 .streamlit/secrets.toml
 
