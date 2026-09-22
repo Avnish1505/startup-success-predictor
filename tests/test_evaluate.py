@@ -1,6 +1,10 @@
 import numpy as np
 
-from src.models.evaluate import calibration_curve_data, choose_threshold, compute_metrics
+from src.models.evaluate import (
+    calibration_curve_data,
+    choose_threshold,
+    compute_metrics,
+)
 
 
 def test_compute_metrics_perfect_separation():

@@ -18,7 +18,10 @@ from sklearn.model_selection import train_test_split
 
 from src.data import schema
 from src.models.evaluate import calibration_curve_data, compute_metrics
-from src.models.percentile import build_reference_distribution, save_reference_distribution
+from src.models.percentile import (
+    build_reference_distribution,
+    save_reference_distribution,
+)
 from src.models.train import ModelSpec, build_pipeline, git_provenance
 
 DATA_PATH = Path("data/processed/startups_features_v1.parquet")
