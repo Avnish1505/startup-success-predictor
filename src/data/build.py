@@ -152,6 +152,11 @@ def main() -> None:
     print(f"Labeled rows (operating dropped): {len(labeled)}")
     pos_rate = labeled["label"].mean()
     print(f"Class balance: positive={labeled['label'].sum()} ({pos_rate:.1%}), negative={(labeled['label']==0).sum()} ({1-pos_rate:.1%})")
+    # Checked on the processed founded_year (post fallback-for-implausible-dates),
+    # not the raw founded_at string - that's what the model and the app's
+    # sensitivity sweep actually see. See DATA_CARD.md for the keep/drop decision.
+    suspect_founded = features["founded_year"] < 1980
+    print(f"Rows with (processed) founded_year < 1980: {int(suspect_founded.sum())} ({suspect_founded.mean():.1%}) - see DATA_CARD.md for the keep/drop decision")
     print(f"Split boundary date: {boundary.date()}")
     print(f"Train rows: {len(train_df)} (positive rate {y_train.mean():.1%})")
     print(f"Test rows: {len(test_df)} (positive rate {y_test.mean():.1%})")

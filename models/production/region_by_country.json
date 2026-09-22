@@ -1,0 +1,690 @@
+{
+  "ARE": [
+    "Dubai"
+  ],
+  "ARG": [
+    "Buenos Aires",
+    "Mendoza, ARG",
+    "Cordoba, ARG"
+  ],
+  "AUS": [
+    "Sydney",
+    "Melbourne",
+    "AUS - Other",
+    "Brisbane",
+    "West End",
+    "Balmain",
+    "Fyshwick"
+  ],
+  "AUT": [
+    "Vienna",
+    "AUT - Other",
+    "Linz",
+    "Graz"
+  ],
+  "BEL": [
+    "Brussels",
+    "BEL - Other",
+    "Antwerp"
+  ],
+  "BGR": [
+    "Sofia",
+    "BGR - Other"
+  ],
+  "BHR": [
+    "Bahrain"
+  ],
+  "BLM": [
+    "BLM - Other"
+  ],
+  "BLR": [
+    "Minsk"
+  ],
+  "BMU": [
+    "Bermuda"
+  ],
+  "BRA": [
+    "BRA - Other",
+    "Sao Paulo",
+    "Porto Alegre",
+    "Rio de Janeiro",
+    "Curitiba",
+    "Recife",
+    "Campinas",
+    "It\u00c3\u00a1"
+  ],
+  "CAN": [
+    "Toronto",
+    "Vancouver",
+    "Montreal",
+    "Ottawa",
+    "Calgary",
+    "Burnaby",
+    "Quebec City",
+    "Halifax",
+    "Edmonton",
+    "QC - Other",
+    "Winnipeg",
+    "ON - Other",
+    "St. John's",
+    "Kanata",
+    "Fredericton",
+    "Brossard",
+    "Etobicoke",
+    "Kelowna",
+    "Spruce Grove",
+    "New Westminster",
+    "Saskatoon",
+    "Charlottetown",
+    "Gatineau",
+    "Dorval",
+    "Moncton"
+  ],
+  "CHE": [
+    "Zurich",
+    "Geneva",
+    "CHE - Other",
+    "Basel",
+    "Lausanne",
+    "Dubendorf",
+    "Vevey",
+    "Schlieren",
+    "Steinhausen"
+  ],
+  "CHL": [
+    "Santiago",
+    "CHL - Other"
+  ],
+  "CHN": [
+    "Beijing",
+    "Shanghai",
+    "CHN - Other",
+    "Shenzhen",
+    "Guangzhou",
+    "Guangdong",
+    "Hangzhou",
+    "Nanjing",
+    "Fuzhou Shi",
+    "Tianjin",
+    "Shenyang",
+    "Chongqing",
+    "Harbin",
+    "Wuhan"
+  ],
+  "CMR": [
+    "CMR - Other"
+  ],
+  "COL": [
+    "Bogota"
+  ],
+  "CRI": [
+    "Costa Rica"
+  ],
+  "CZE": [
+    "Prague"
+  ],
+  "DEU": [
+    "Munich",
+    "DEU - Other",
+    "Berlin",
+    "Hamburg",
+    "Frankfurt",
+    "Cologne",
+    "Stuttgart",
+    "Dresden",
+    "Dusseldrof",
+    "Hanover",
+    "Nuremberg",
+    "Martinsried",
+    "Jena",
+    "Munster",
+    "Bremen",
+    "Regensburg",
+    "Dortmund",
+    "Homburg",
+    "Erlangen",
+    "Freiburg",
+    "Unterhaching",
+    "Mannheim",
+    "Chemnitz",
+    "Halle An Der Saale",
+    "Starnberg",
+    "Bielefeld",
+    "Muenchen"
+  ],
+  "DNK": [
+    "Copenhagen",
+    "DNK - Other",
+    "Odense",
+    "H\u00c3\u00b8rsholm",
+    "Aller\u00c3\u00b8d",
+    "Ballerup"
+  ],
+  "ESP": [
+    "Madrid",
+    "Barcelona",
+    "Girona",
+    "Seville",
+    "Bilbao",
+    "Zaragoza",
+    "Santander",
+    "Palma De Mallorca",
+    "Malaga",
+    "Leganes",
+    "Marbella",
+    "Valencia",
+    "Pozuelo De Alarcon",
+    "Elche",
+    "C\u00c3\u00a1ceres",
+    "Cadiz",
+    "San Sebasti\u00c3\u00a1n De Los Reyes"
+  ],
+  "EST": [
+    "Tallinn"
+  ],
+  "FIN": [
+    "Helsinki",
+    "Oulu",
+    "Vantaa",
+    "Jyv\u00c3\u00a4skyl\u00c3\u00a4",
+    "Tampere",
+    "Turku"
+  ],
+  "FRA": [
+    "Paris",
+    "FRA - Other",
+    "Marseille",
+    "Montpellier",
+    "Toulouse",
+    "Nantes",
+    "Orsay",
+    "Lyon",
+    "Lab\u00c3\u00a8ge",
+    "Aix-en-provence",
+    "Nice",
+    "Neuilly-sur-seine",
+    "Strasbourg",
+    "Lannion",
+    "Villeurbanne",
+    "Grenoble",
+    "Bordeaux",
+    "Puteaux"
+  ],
+  "GBR": [
+    "London",
+    "GBR - Other",
+    "Edinburgh",
+    "Belfast",
+    "Sheffield",
+    "Nottingham",
+    "Liverpool",
+    "Newcastle",
+    "Bristol",
+    "Manchester",
+    "Bath",
+    "Leeds",
+    "Newbury",
+    "Birmingham",
+    "Oxton",
+    "Bellshill",
+    "Staines-upon-thames",
+    "Swindon",
+    "Middlesbrough",
+    "Leamington Spa",
+    "Welwyn Garden City",
+    "Snodland",
+    "Preston",
+    "Glasgow",
+    "Harrogate",
+    "Dunfermline",
+    "Rotherham",
+    "Newport",
+    "Gateshead",
+    "Exeter",
+    "Binton",
+    "Macclesfield",
+    "Coleraine",
+    "Livingston",
+    "Farrington Gurney",
+    "Kent",
+    "Aberdeen",
+    "Beaconsfield",
+    "Wolverhampton",
+    "Stockton-on-tees",
+    "Loughborough",
+    "Reigate",
+    "Chester",
+    "Amersham",
+    "Derby",
+    "Twickenham",
+    "Leicester",
+    "Marlborough",
+    "Aldershot",
+    "Camberley",
+    "Hove",
+    "Sunderland Bridge",
+    "Cheltenham",
+    "Cardiff",
+    "Doncaster",
+    "Lymington",
+    "Sittingbourne",
+    "Salford"
+  ],
+  "GHA": [
+    "Accra"
+  ],
+  "GRC": [
+    "Athens",
+    "Maro\u00c3\u00bali"
+  ],
+  "HKG": [
+    "Hong Kong"
+  ],
+  "HUN": [
+    "Budapest",
+    "HUN - Other"
+  ],
+  "IDN": [
+    "Jakarta",
+    "Dki Jakarta"
+  ],
+  "IND": [
+    "Bangalore",
+    "Mumbai",
+    "New Delhi",
+    "Chennai",
+    "Hyderabad",
+    "Ahmedabad",
+    "Pune",
+    "Chandigarh",
+    "Ghaziabad",
+    "Jaipur",
+    "Delhi",
+    "Trivandrum",
+    "IND - Other",
+    "Haryana",
+    "Thane",
+    "Vellore",
+    "Kolkata"
+  ],
+  "IRL": [
+    "Dublin",
+    "IRL - Other",
+    "Galway",
+    "Blackrock",
+    "Limerick",
+    "Cork"
+  ],
+  "ISL": [
+    "Reyjavik"
+  ],
+  "ISR": [
+    "Tel Aviv",
+    "ISR - Other",
+    "Netanya",
+    "Jerusalem",
+    "Haifa"
+  ],
+  "ITA": [
+    "Milan",
+    "ITA - Other",
+    "Rome",
+    "Roncade",
+    "Turin",
+    "Palermo",
+    "Naples",
+    "Venice",
+    "Bolzano",
+    "Bologna"
+  ],
+  "JOR": [
+    "Amman"
+  ],
+  "JPN": [
+    "Tokyo",
+    "JPN - Other",
+    "Osaka"
+  ],
+  "KOR": [
+    "Seoul",
+    "KOR - Other",
+    "Bundangdong"
+  ],
+  "LBN": [
+    "Beirut"
+  ],
+  "LIE": [
+    "LIE - Other"
+  ],
+  "LTU": [
+    "Vilnius",
+    "LTU - Other"
+  ],
+  "LUX": [
+    "Strassen",
+    "Luxemburg",
+    "Esch-sur-alzette"
+  ],
+  "LVA": [
+    "Riga"
+  ],
+  "MAF": [
+    "MAF - Other"
+  ],
+  "MEX": [
+    "Mexico City",
+    "MEX - Other",
+    "Guadalajara",
+    "Monterrey"
+  ],
+  "MKD": [
+    "Skopje"
+  ],
+  "MYS": [
+    "Kuala Lumpur",
+    "MYS - Other"
+  ],
+  "NGA": [
+    "NGA - Other",
+    "Lagos"
+  ],
+  "NLD": [
+    "Amsterdam",
+    "The Hague",
+    "NLD - Other",
+    "Utrecht",
+    "Rotterdam",
+    "Eindhoven"
+  ],
+  "NOR": [
+    "Oslo",
+    "NOR - Other",
+    "Lysaker",
+    "Kristiansand",
+    "Trondheim"
+  ],
+  "NZL": [
+    "Wellington",
+    "Auckland",
+    "NZL - Other"
+  ],
+  "PAK": [
+    "Islamabad",
+    "Karachi",
+    "Lahore"
+  ],
+  "PER": [
+    "PER - Other",
+    "Lima"
+  ],
+  "PHL": [
+    "Manila"
+  ],
+  "POL": [
+    "Warsaw",
+    "Wroclaw",
+    "POL - Other",
+    "Krakow",
+    "Gdansk"
+  ],
+  "PRT": [
+    "Porto",
+    "Lisbon"
+  ],
+  "ROM": [
+    "Bucharest",
+    "Cluj-Napoca"
+  ],
+  "RUS": [
+    "Moscow",
+    "Perm",
+    "St. Petersburg",
+    "RUS - Other",
+    "Kazan",
+    "Novosibirsk"
+  ],
+  "SGP": [
+    "Singapore"
+  ],
+  "SLV": [
+    "SLV - Other"
+  ],
+  "SOM": [
+    "SOM - Other"
+  ],
+  "SVN": [
+    "Ljubljana"
+  ],
+  "SWE": [
+    "Stockholm",
+    "Malmo",
+    "Gothenburg",
+    "SWE - Other",
+    "Linkoping",
+    "Karlskrona",
+    "Danderyd"
+  ],
+  "SYC": [
+    "Seychelles"
+  ],
+  "THA": [
+    "Bangkok"
+  ],
+  "TTO": [
+    "TTO - Other"
+  ],
+  "TUR": [
+    "\u00c3\u2021an",
+    "Istanbul"
+  ],
+  "TWN": [
+    "Taiwan"
+  ],
+  "UGA": [
+    "Kampala"
+  ],
+  "URY": [
+    "Montevideo"
+  ],
+  "USA": [
+    "SF Bay Area",
+    "Boston",
+    "New York City",
+    "Los Angeles",
+    "Seattle",
+    "San Diego",
+    "Washington, D.C.",
+    "Austin",
+    "Chicago",
+    "Denver",
+    "Newark",
+    "Atlanta",
+    "Anaheim",
+    "Philadelphia",
+    "Dallas",
+    "Raleigh",
+    "Salt Lake City",
+    "Minneapolis",
+    "Hartford",
+    "Houston",
+    "Portland, Oregon",
+    "Pittsburgh",
+    "Baltimore",
+    "Detroit",
+    "Phoenix",
+    "Tampa",
+    "Nashville",
+    "Palm Beaches",
+    "Santa Barbara",
+    "Miami",
+    "Las Vegas",
+    "Orlando",
+    "Orange County, California",
+    "CA - Other",
+    "Long Island",
+    "Cleveland",
+    "Ft. Lauderdale",
+    "Manchester, New Hampshire",
+    "Indianapolis",
+    "Kansas City",
+    "San Antonio",
+    "St. Louis",
+    "NJ - Other",
+    "Charlotte",
+    "Cincinnati",
+    "Providence",
+    "Napa Valley",
+    "Madison",
+    "Jacksonville",
+    "Sacramento",
+    "Worcester",
+    "Columbus, Ohio",
+    "NY - Other",
+    "Rochester, New York",
+    "Milwaukee",
+    "Wilmington, Delaware",
+    "Omaha",
+    "Ontario - Inland Empire",
+    "Louisville",
+    "Albuquerque",
+    "Des Moines",
+    "Alexandria",
+    "Florida's Space Coast",
+    "Allentown",
+    "Birmingham",
+    "Roanoke",
+    "Tucson",
+    "Richmond",
+    "MN - Other",
+    "Portsmouth",
+    "WI - Other",
+    "Memphis",
+    "Buffalo",
+    "VT - Other",
+    "Springfield, Illinois",
+    "PA - Other",
+    "CT - Other",
+    "New Bedford",
+    "MA - Other",
+    "Harrisburg",
+    "Greenville - Spartanburg",
+    "Sarasota - Bradenton",
+    "Tulsa",
+    "Gainesville",
+    "Eugene",
+    "Charleston, South Carolina",
+    "Green Bay",
+    "Winston-Salem",
+    "Spokane",
+    "Boise",
+    "MD - Other",
+    "CO - Other",
+    "ME - Other",
+    "Bakersfield",
+    "Hagerstown",
+    "Toledo",
+    "Fort Collins",
+    "Chattanooga",
+    "Huntsville",
+    "Cedar Rapids",
+    "SC - Other",
+    "IL - Other",
+    "Rockford",
+    "KS - Other",
+    "VA - Other",
+    "Elmira",
+    "Jackson",
+    "Pensacola",
+    "Montpelier",
+    "Lansing",
+    "Grand Rapids",
+    "Akron - Canton",
+    "Portland, Maine",
+    "San Luis Obispo",
+    "Baton Rouge",
+    "Cape Cod",
+    "MO - Other",
+    "Knoxville",
+    "New Orleans",
+    "Atlantic City",
+    "Little Rock",
+    "Sacramento Valley",
+    "NE - Other",
+    "Fort Myers",
+    "Idaho Falls",
+    "IA - Other",
+    "Albany, New York",
+    "Lexington",
+    "Honolulu",
+    "Youngstown",
+    "Naples, Florida",
+    "Maui",
+    "Oklahoma City",
+    "Fayetteville",
+    "Fresno",
+    "TN - Other",
+    "IN - Other",
+    "Dover",
+    "Bozeman",
+    "Reno - Sparks",
+    "WV - Other",
+    "ID - Other",
+    "SD - Other",
+    "NV - Other",
+    "KY - Other",
+    "Colorado Springs",
+    "NM - Other",
+    "AZ - Other",
+    "Shreveport",
+    "MS - Other",
+    "MT - Other",
+    "Columbia, South Carolina",
+    "Monroe",
+    "Peoria",
+    "Wichita",
+    "TX - Other",
+    "OH - Other",
+    "Branson",
+    "Duluth",
+    "Dayton",
+    "Asheville",
+    "Daytona Beach",
+    "UT - Other",
+    "Anchorage",
+    "Medford",
+    "Savannah",
+    "Lafayette, Louisiana",
+    "St. Cloud",
+    "Wilmington - Cape Fear, North Carolina",
+    "Columbus, Georgia",
+    "LA - Other",
+    "Tallahassee",
+    "Florida's Treasure Coast",
+    "GA - Other",
+    "Kalamazoo",
+    "Grand Junction",
+    "Palm Springs",
+    "Vail",
+    "AL - Other",
+    "MI - Other",
+    "Monterey",
+    "NH - Other",
+    "Rochester, Minnesota",
+    "State College",
+    "WA - Other",
+    "Syracuse",
+    "Lake Tahoe",
+    "South Bend",
+    "Charleston, West Virginia",
+    "Missoula",
+    "Salem, Oregon"
+  ],
+  "VNM": [
+    "Ho Chi Minh",
+    "Hanoi"
+  ],
+  "ZAF": [
+    "Cape Town",
+    "Johannesburg"
+  ]
+}
