@@ -1528,12 +1528,12 @@ git commit -m "docs: add coverage note, USA-concentration limitation, clean-vs-f
 
 ## Task 11: Final verification against every acceptance criterion
 
-- [ ] **Step 1: Full test suite + lint**
+- [x] **Step 1: Full test suite + lint**
 
 Run: `pytest -v && ruff check src/ tests/ api.py`
 Expected: all pass, clean.
 
-- [ ] **Step 2: Walk every acceptance bullet explicitly, with evidence**
+- [x] **Step 2: Walk every acceptance bullet explicitly, with evidence**
 
 1. `pytest tests/test_confidence.py -k bracket -v` - the bracketing test passes (Task 2).
 2. Manually drive the running app: ask "hi" in Advisor -> confirm capability statement, not the facts bundle. Ask "why is my funding hurting the score" (after a prediction) -> confirm the funding line appears before the generic table (Task 7/8).
@@ -1543,7 +1543,7 @@ Expected: all pass, clean.
 6. Screenshot every chart (Predictor's SHAP/PDP/gauge, all four Analytics charts) and pixel-sample axis label regions the same way as the "Verified real state" section - confirm dark, legible text (Task 4's fix).
 7. Confirm `app.py` defaults to `clean`, `api.py`'s `DEFAULT_FEATURE_SET == "clean"`, and `/model-info` reports both AUCs.
 
-- [ ] **Step 3: Report results**
+- [x] **Step 3: Report results**
 
 For each of the 7 bullets above, state pass/fail with the concrete evidence (command output, pixel values, or screenshot reference) - not just "looks good."
 
