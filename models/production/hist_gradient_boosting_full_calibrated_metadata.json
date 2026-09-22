@@ -16,10 +16,10 @@
   "n_train_fit": 8537,
   "n_calibration": 2135,
   "n_test": 2662,
-  "brier_before": 0.1433016578191366,
-  "brier_after": 0.14997119078346396,
-  "roc_auc_before": 0.8306750261865782,
-  "roc_auc_after": 0.8265673559161483,
-  "git_sha": "c79dfa2a717e013f6829cbaeff09f1e0989afe64",
+  "brier_before": 0.1432674846474551,
+  "brier_after": 0.14995793972182964,
+  "roc_auc_before": 0.8308011831359158,
+  "roc_auc_after": 0.8267371271251138,
+  "git_sha": "745a042a2570ee9732ff655ff30fd5548b9db572",
   "git_dirty": true
 }

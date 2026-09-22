@@ -35,15 +35,16 @@ A logistic-regression probe (`ColumnTransformer` + median/constant imputation + 
 
 | Feature set | Test ROC AUC |
 |---|---|
-| clean | 0.8021 |
-| full  | 0.8495 |
+| clean | 0.8022 |
+| full  | 0.8496 |
 | **gap (full − clean)** | **+0.0474** |
 
 **This gap is the finding.** ~4.7 points of AUC in the "full" model come from information that would not be available at prediction time in a real forward-looking use case (a model scoring an *active* company can't see its final, post-outcome funding total). Any model reporting AUC near 0.85 on this dataset using `funding_total_usd`/`funding_rounds`/`last_funding_at` is measuring leakage, not skill.
 
 ## Time-based split
 
-- Split key: `founded_at` when plausible (year ≥ 1900 and not later than the dataset's own max observed funding date, used as a scrape-time proxy — 114 rows dataset-wide have corrupted `founded_at` values like `1015-01-30` or `2914-01-01`); falls back to `first_funding_at` otherwise (3,754 of 13,334 labeled rows, 28.2%, use the fallback — chiefly the 3,732 rows with null `founded_at`). Every labeled row has at least one usable date; zero rows are dropped for lacking both.
+- Split key: `founded_at` when plausible (year ≥ 1900 and not later than `first_funding_at`'s own max, used as a scrape-time proxy — 114 rows dataset-wide have corrupted `founded_at` values like `1015-01-30` or `2914-01-01`); falls back to `first_funding_at` otherwise (3,755 of 13,334 labeled rows, 28.2%, use the fallback — chiefly the 3,732 rows with null `founded_at`, plus a handful with an out-of-range `founded_at`). Every labeled row has at least one usable date; zero rows are dropped for lacking both.
+- **Correction (found while building Step 4's age-band analytics):** the upper bound for "plausible" originally used `max(first_funding_at, last_funding_at)`. Two rows have a corrupted `last_funding_at` (years 2105 and 2115), which silently raised that bound and let one row's `founded_at = 2041` pass as "plausible." Fixed to use `first_funding_at`'s max alone (`last_funding_at` has no role in validating `founded_at` conceptually, and is itself sometimes garbage). Impact was negligible — re-running the full pipeline moved the diagnostic AUC gap from 0.8021/0.8495 to 0.8022/0.8496 (4th decimal place) and the fallback count from 3,754 to 3,755 — but the bug was real and is now fixed at the source rather than patched around downstream.
 - Boundary (80th percentile of the effective date): **2011-12-01**.
 - Train: 10,672 rows (older cohort), positive rate **59.8%**.
 - Test: 2,662 rows (newer cohort), positive rate **26.7%**.

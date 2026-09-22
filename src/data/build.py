@@ -61,8 +61,10 @@ def compute_dates(df: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
     """
     founded_raw = pd.to_datetime(df["founded_at"], errors="coerce")
     first_funding = pd.to_datetime(df["first_funding_at"], errors="coerce")
-    last_funding = pd.to_datetime(df["last_funding_at"], errors="coerce")
-    upper_bound = max(first_funding.max(), last_funding.max())
+    # Deliberately NOT last_funding_at: it has its own garbage values (e.g. year
+    # 2115 in this dataset) that would silently raise the upper bound and let
+    # equally-garbage founded_at values (e.g. year 2041) pass as "plausible."
+    upper_bound = first_funding.max()
 
     plausible = founded_raw.notna() & (founded_raw.dt.year >= schema.MIN_FOUNDED_YEAR) & (founded_raw <= upper_bound)
     founded_clean = founded_raw.where(plausible)
