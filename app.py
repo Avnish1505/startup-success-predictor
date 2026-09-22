@@ -1,8 +1,31 @@
+import json
+from datetime import date
+from pathlib import Path
+
+import joblib
+import numpy as np
+import pandas as pd
 import streamlit as st
 import analytics
 from advisor_ai import startup_advice
-from predictor import predict_startup # Local ultra-fast predictor import
 import plotly.express as px
+
+from src.data import schema
+from src.models.explain import explain_prediction
+from src.models.percentile import compute_percentile, load_reference_distribution
+
+PRODUCTION_DIR = Path("models/production")
+FEATURE_COLS = schema.FULL_NUMERIC_FEATURES + schema.FULL_CATEGORICAL_FEATURES
+
+
+@st.cache_resource
+def load_production_artifacts():
+    calibrated = joblib.load(PRODUCTION_DIR / "hist_gradient_boosting_full_calibrated.joblib")
+    base = joblib.load(PRODUCTION_DIR / "hist_gradient_boosting_full_calibrated_base.joblib")
+    reference = load_reference_distribution(PRODUCTION_DIR / "train_score_distribution.npy")
+    options = json.loads((PRODUCTION_DIR / "category_options.json").read_text())
+    return calibrated, base, reference, options
+
 
 st.set_page_config(
     page_title="Startup AI",
@@ -86,19 +109,41 @@ with tab1:
     st.header("Startup Predictor")
     st.write("Enter startup details to predict success probability")
 
+    calibrated_pipeline, base_pipeline, train_reference, category_options = load_production_artifacts()
+
     col1, col2 = st.columns(2)
     with col1:
-        funding = st.number_input("Funding Amount ($)", min_value=0, value=100000, step=10000)
-        team_size = st.number_input("Team Size", min_value=1, value=5, step=1)
+        founded_date = st.date_input("Founded date", value=date(2013, 1, 1))
+        first_funding_date = st.date_input("First funding date", value=date(2013, 6, 1))
+        last_funding_date = st.date_input("Most recent funding date", value=date(2014, 1, 1))
+        funding_total_usd = st.number_input("Total funding raised ($)", min_value=0, value=1_000_000, step=10_000)
+        funding_rounds = st.number_input("Number of funding rounds", min_value=1, value=2, step=1)
     with col2:
-        experience = st.number_input("Founders Experience (Years)", min_value=0, value=2, step=1)
-        market = st.selectbox("Market Size", [0, 1, 2], help="0: Small, 1: Medium, 2: Large")
+        country_options = category_options["country_code"] + ["UNKNOWN"]
+        country_code = st.selectbox(
+            "Country", country_options,
+            index=country_options.index("USA") if "USA" in country_options else 0,
+        )
+        region = st.selectbox("Region", category_options["region"] + ["UNKNOWN"])
+        primary_category = st.selectbox("Primary category", category_options["primary_category"] + ["UNKNOWN"])
+
+    input_row = pd.DataFrame([{
+        "founded_year": float(founded_date.year),
+        "time_to_first_funding_days": float((first_funding_date - founded_date).days),
+        "funding_total_usd_log1p": float(np.log1p(funding_total_usd)),
+        "funding_rounds": float(funding_rounds),
+        "funding_span_days": float((last_funding_date - first_funding_date).days),
+        "country_code": country_code,
+        "region": region,
+        "primary_category": primary_category,
+    }])
 
     # Process prediction when button is clicked
     if st.button("Predict"):
         try:
-            prob = predict_startup(funding, team_size, experience, market)
+            prob = float(calibrated_pipeline.predict_proba(input_row[FEATURE_COLS])[0, 1]) * 100
             st.session_state.prediction_prob = prob
+            st.session_state.prediction_input = input_row
         except Exception as e:
             st.error(f"⚠️ Prediction Error: {e}")
 
@@ -108,6 +153,7 @@ with tab1:
         <div style='padding:20px; border-radius:12px; background:#1e293b'>
         <h3>📊 Success Probability</h3>
         <h1 style='color:#22c55e;'>{prob:.2f}%</h1>
+        <p style='color:#94a3b8; font-size:12px;'>Calibrated via CalibratedClassifierCV - see MODEL_CARD.md</p>
         </div>
         """, unsafe_allow_html=True)
         st.progress(int(prob))
@@ -115,28 +161,34 @@ with tab1:
         col_a, col_b = st.columns(2)
         with col_a:
             st.subheader("🧠 Why this result?")
-            reasons = []
-            if funding > 150000: reasons.append("💰 Strong funding boosts success chances")
-            if experience > 2: reasons.append("👨‍💼 Experienced founders improve execution")
-            if team_size > 5: reasons.append("👥 Larger team supports scaling")
-            if market == 2: reasons.append("🌍 Large market increases opportunity")
-            
-            for r in reasons: st.write("- " + r)
-                
+            contributions = explain_prediction(
+                base_pipeline, FEATURE_COLS, st.session_state.prediction_input, top_n=5
+            )
+            for c in contributions:
+                arrow = "⬆️" if c["direction"] == "increases" else "⬇️"
+                st.write(f"- {arrow} `{c['feature']}` = {c['value']} {c['direction']} predicted success (SHAP {c['shap_value']:+.3f})")
+
             st.subheader("🎯 Suggestions")
             if prob < 50:
-                st.write("• Increase funding\n• Improve team experience\n• Focus on product-market fit")
+                st.write("• Shorten time-to-first-funding\n• Pursue additional funding rounds\n• Target regions/categories with stronger historical outcomes")
             else:
-                st.write("• Scale your startup\n• Expand into new markets")
+                st.write("• Maintain funding momentum\n• Expand into additional high-performing regions")
 
         with col_b:
             fig = px.pie(values=[prob, 100-prob], names=["Success", "Failure"], title="Prediction Split", color_discrete_sequence=['#22c55e', '#ef4444'])
             st.plotly_chart(fig, use_container_width=True)
 
         st.subheader("📊 Industry Comparison")
-        st.info(f"Your startup performs better than {int(prob)}% of similar startups")
-        
-        report_data = f"Startup Success Probability: {prob:.2f}%\nFunding: ${funding}\nTeam: {team_size}\nExperience: {experience} yrs\nMarket: {market}"
+        percentile = compute_percentile(prob / 100.0, train_reference)
+        st.info(f"Your predicted score is higher than {percentile:.1f}% of startups in the training cohort (calibrated empirical percentile, not the raw probability)")
+
+        report_data = (
+            f"Startup Success Probability (calibrated): {prob:.2f}%\n"
+            f"Percentile vs. training cohort: {percentile:.1f}%\n"
+            f"Founded: {founded_date} | First funding: {first_funding_date} | Last funding: {last_funding_date}\n"
+            f"Total funding: ${funding_total_usd} | Rounds: {funding_rounds}\n"
+            f"Country: {country_code} | Region: {region} | Category: {primary_category}"
+        )
         st.download_button(label="📄 Download Report", data=report_data, file_name="startup_report.txt")
 
 # ---------------- Analytics ----------------

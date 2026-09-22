@@ -1,0 +1,25 @@
+{
+  "model_name": "hist_gradient_boosting_full_calibrated",
+  "calibration_method": "isotonic",
+  "numeric_features": [
+    "founded_year",
+    "time_to_first_funding_days",
+    "funding_total_usd_log1p",
+    "funding_rounds",
+    "funding_span_days"
+  ],
+  "categorical_features": [
+    "country_code",
+    "region",
+    "primary_category"
+  ],
+  "n_train_fit": 8537,
+  "n_calibration": 2135,
+  "n_test": 2662,
+  "brier_before": 0.1433016578191366,
+  "brier_after": 0.14997119078346396,
+  "roc_auc_before": 0.8306750261865782,
+  "roc_auc_after": 0.8265673559161483,
+  "git_sha": "c79dfa2a717e013f6829cbaeff09f1e0989afe64",
+  "git_dirty": true
+}

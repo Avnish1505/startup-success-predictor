@@ -9,7 +9,10 @@ data/processed/
 .pytest_cache/
 
 # Generated model artifacts (regenerate with: python -m src.models.train)
-/models/
+# models/production/ is committed: the deployed app needs it at runtime and
+# can't regenerate Kaggle-credentialed data at deploy time.
+/models/*
+!/models/production/
 .ipynb_checkpoints/
 
 # Streamlit secrets (VERY IMPORTANT - Do not remove this)
