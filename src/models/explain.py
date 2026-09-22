@@ -5,20 +5,25 @@ from __future__ import annotations
 import shap
 from sklearn.pipeline import Pipeline
 
-_EXPLAINER_CACHE: dict[int, shap.TreeExplainer] = {}
+# Keyed by id(pipeline), but each entry also holds a strong reference to the
+# pipeline itself. That reference does two things: it keeps the pipeline
+# alive for as long as it's cached (so its id() can't be reused by an
+# unrelated, later object while the entry is still present), and it lets us
+# verify identity on lookup so a stale entry - e.g. one left over from an
+# earlier object that has since been garbage collected and whose id() a new
+# object happens to reuse - is never mistaken for a cache hit.
+_EXPLAINER_CACHE: dict[int, tuple[Pipeline, shap.TreeExplainer]] = {}
 
 
 def get_explainer(pipeline: Pipeline) -> shap.TreeExplainer:
-    """Build (once) or reuse a TreeExplainer for this exact pipeline object.
-
-    Cached by id(pipeline) rather than lru_cache, since we only ever want to
-    key on object identity - never on equality/hash semantics of sklearn
-    estimators - and never rebuild the explainer per request.
-    """
+    """Build (once) or reuse a TreeExplainer for this exact pipeline object."""
     key = id(pipeline)
-    if key not in _EXPLAINER_CACHE:
-        _EXPLAINER_CACHE[key] = shap.TreeExplainer(pipeline.named_steps["clf"])
-    return _EXPLAINER_CACHE[key]
+    cached = _EXPLAINER_CACHE.get(key)
+    if cached is not None and cached[0] is pipeline:
+        return cached[1]
+    explainer = shap.TreeExplainer(pipeline.named_steps["clf"])
+    _EXPLAINER_CACHE[key] = (pipeline, explainer)
+    return explainer
 
 
 def explain_prediction(pipeline: Pipeline, feature_names: list[str], input_df, top_n: int = 5) -> list[dict]:
