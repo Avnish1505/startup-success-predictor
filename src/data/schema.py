@@ -30,3 +30,8 @@ FULL_NUMERIC_FEATURES = CLEAN_NUMERIC_FEATURES + [
 FULL_CATEGORICAL_FEATURES = list(CLEAN_CATEGORICAL_FEATURES)
 
 MIN_FOUNDED_YEAR = 1900
+
+# Shared with analytics.py and src/advisor/facts.py, so both use one definition.
+FUNDING_BIN_EDGES = [0, 100_000, 1_000_000, 10_000_000, 100_000_000, float("inf")]
+FUNDING_BIN_LABELS = ["<$100K", "$100K-$1M", "$1M-$10M", "$10M-$100M", "$100M+"]
+MIN_COHORT_SIZE = 30

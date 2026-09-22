@@ -3,11 +3,13 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-DATA_PATH = "data/processed/startups_features_v1.parquet"
-MIN_GROUP_SIZE = 30
+from src.data import schema
 
-FUNDING_BIN_EDGES = [0, 100_000, 1_000_000, 10_000_000, 100_000_000, np.inf]
-FUNDING_BIN_LABELS = ["<$100K", "$100K-$1M", "$1M-$10M", "$10M-$100M", "$100M+"]
+DATA_PATH = "data/processed/startups_features_v1.parquet"
+MIN_GROUP_SIZE = schema.MIN_COHORT_SIZE
+
+FUNDING_BIN_EDGES = schema.FUNDING_BIN_EDGES
+FUNDING_BIN_LABELS = schema.FUNDING_BIN_LABELS
 
 AGE_BIN_EDGES = [0, 2, 5, 10, 20, np.inf]
 AGE_BIN_LABELS = ["0-2y", "2-5y", "5-10y", "10-20y", "20y+"]
