@@ -4,15 +4,40 @@ are a plain dense numpy array on disk; no vector database, no network."""
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
 import joblib
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS, TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 from src.advisor.chunking import Chunk
+
+_TOKEN_RE = re.compile(r"[a-zA-Z]{2,}")
+_SUFFIX_RULES = [("ies", "y"), ("ing", ""), ("ed", ""), ("es", ""), ("s", "")]
+
+
+def _stem(word: str) -> str:
+    """Minimal suffix-stripping stemmer - not a full Porter stemmer, but
+    enough to close the plural/singular gap (e.g. "startups" -> "startup")
+    that caused a real zero-score retrieval failure found during manual
+    testing (see RETRIEVAL_EVAL.md), without pulling in a stemming
+    dependency for a corpus this small."""
+    for suffix, replacement in _SUFFIX_RULES:
+        if word.endswith(suffix) and len(word) - len(suffix) + len(replacement) >= 3:
+            return word[: -len(suffix)] + replacement
+    return word
+
+
+def _tokenize_and_stem(text: str) -> list[str]:
+    # Stopwords are filtered on the raw token here, not passed as
+    # TfidfVectorizer's own stop_words= - that filters against raw English
+    # words, which would silently stop matching once tokens are stemmed
+    # (sklearn warns about exactly this if the two are combined).
+    raw_tokens = _TOKEN_RE.findall(text.lower())
+    return [_stem(t) for t in raw_tokens if t not in ENGLISH_STOP_WORDS]
 
 
 @dataclass
@@ -23,7 +48,7 @@ class AdvisorIndex:
 
 
 def build_index(chunks: list[Chunk]) -> AdvisorIndex:
-    vectorizer = TfidfVectorizer(stop_words="english")
+    vectorizer = TfidfVectorizer(tokenizer=_tokenize_and_stem, token_pattern=None)
     matrix = vectorizer.fit_transform([c.text for c in chunks])
     return AdvisorIndex(vectorizer=vectorizer, vectors=matrix.toarray(), chunks=chunks)
 

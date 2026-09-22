@@ -167,6 +167,7 @@ with tab1:
             contributions = explain_prediction(
                 base_pipeline, FEATURE_COLS, st.session_state.prediction_input, top_n=5
             )
+            st.session_state.prediction_shap_contributions = contributions
             for c in contributions:
                 arrow = "⬆️" if c["direction"] == "increases" else "⬇️"
                 st.write(f"- {arrow} `{c['feature']}` = {c['value']} {c['direction']} predicted success (SHAP {c['shap_value']:+.3f})")
@@ -212,6 +213,7 @@ with tab1:
 
         st.subheader("📊 Industry Comparison")
         percentile = compute_percentile(prob / 100.0, train_reference)
+        st.session_state.prediction_percentile = percentile
         st.info(f"Your predicted score is higher than {percentile:.1f}% of startups in the training cohort (calibrated empirical percentile, not the raw probability)")
 
         snap = st.session_state.prediction_input.iloc[0]

@@ -1,46 +1,63 @@
+"""Streamlit-facing wrapper around the local facts + retrieval advisor.
+No external API, no network call, no API key."""
+import json
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
 import streamlit as st
 
-def fallback_response(question):
-    """
-    Provides a rule-based fallback response if the AI API fails.
-    
-    Args:
-        question (str): The user's query.
-    """
-    q = question.lower()
+from src.advisor.facts import assemble_facts_bundle, compute_cohort_stats
+from src.advisor.response import build_advisor_response
+from src.advisor.retrieval import load_index
+from src.models.confidence import lookup_confidence_band
 
-    if "funding" in q:
-        return "Focus on MVP and approach angel investors."
-    elif "team" in q:
-        return "Build a strong founding team."
-    else:
-        return "Work on product-market fit."
+PRODUCTION_DIR = Path("models/production")
+DATA_PATH = Path("data/processed/startups_features_v1.parquet")
 
 
-def startup_advice(question):
-    """
-    Fetches startup advice from the Google Gemini AI model.
-    Falls back to a basic response mechanism upon failure.
-    
-    Args:
-        question (str): The user's startup-related query.
-    """
-    try:
-        from google import genai
+@st.cache_resource
+def _load_advisor_resources():
+    index = load_index(PRODUCTION_DIR / "advisor_index")
+    confidence_bands = json.loads((PRODUCTION_DIR / "confidence_bands.json").read_text())
+    cohort_df = pd.read_parquet(DATA_PATH)
+    return index, confidence_bands, cohort_df
 
-        if "GEMINI_API_KEY" in st.secrets:
-            api_key = st.secrets["GEMINI_API_KEY"]
-        else:
-            return "⚠️ API Key missing in Streamlit secrets."
 
-        client = genai.Client(api_key=api_key)
+def _build_prediction_context() -> dict | None:
+    if "prediction_prob" not in st.session_state or "prediction_input" not in st.session_state:
+        return None
 
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=question
-        )
-        return response.text
+    _, confidence_bands, cohort_df = _load_advisor_resources()
+    prob_fraction = st.session_state.prediction_prob / 100.0
+    snap = st.session_state.prediction_input.iloc[0]
 
-    except Exception as e:
-        # Log error to UI and provide a fallback response upon API failure
-        return f"⚠️ **Gemini AI Error:** {e}\n\n💡 *Basic Advice:* {fallback_response(question)}"
+    confidence_band = lookup_confidence_band(prob_fraction, confidence_bands)
+    funding_total_usd = float(np.expm1(snap["funding_total_usd_log1p"]))
+    cohort_stats = compute_cohort_stats(
+        cohort_df,
+        country_code=snap["country_code"],
+        primary_category=snap["primary_category"],
+        funding_total_usd=funding_total_usd,
+    )
+    shap_contributions = st.session_state.get("prediction_shap_contributions", [])
+    percentile = st.session_state.get("prediction_percentile", 0.0)
+
+    return assemble_facts_bundle(
+        inputs={
+            "country_code": snap["country_code"],
+            "primary_category": snap["primary_category"],
+            "funding_total_usd": funding_total_usd,
+        },
+        probability=prob_fraction,
+        confidence_band=confidence_band,
+        shap_contributions=shap_contributions,
+        percentile=percentile,
+        cohort_stats=cohort_stats,
+    )
+
+
+def startup_advice(question: str) -> str:
+    index, _, _ = _load_advisor_resources()
+    facts_bundle = _build_prediction_context()
+    return build_advisor_response(question, facts_bundle, index)

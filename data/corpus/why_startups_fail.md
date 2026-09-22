@@ -6,7 +6,7 @@ retrieved: "2026-09-22"
 
 ## Running Out of Cash Is the Proximate Cause, Not the Root Cause
 
-CB Insights' analysis of venture-backed company shutdowns (its 2024 update looked at 431 VC-backed companies that shut down since 2023) found that running out of capital is the single most common *reported* reason, showing up in roughly 70% of post-mortems. But CB Insights itself is careful to frame this as the final event, not the underlying problem: a company runs out of cash because something upstream of the cash position went wrong first. Treating "ran out of money" as an explanation is like treating "the patient stopped breathing" as a cause of death - technically true, and not what anyone actually wants to know.
+Why do startups fail? CB Insights' analysis of venture-backed company shutdowns (its 2024 update looked at 431 VC-backed companies that shut down since 2023) found that running out of capital is the single most common *reported* reason startups fail, showing up in roughly 70% of post-mortems. But CB Insights itself is careful to frame this as the final event, not the underlying problem: a company runs out of cash because something upstream of the cash position went wrong first. Treating "ran out of money" as an explanation is like treating "the patient stopped breathing" as a cause of death - technically true, and not what anyone actually wants to know.
 
 ## The Root Causes Behind the Cash Crunch
 
