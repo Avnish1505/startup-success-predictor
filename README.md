@@ -36,6 +36,10 @@ Unlike standard ML projects that stop at a binary "Pass/Fail" prediction, this a
 3. **Local Advisor Consultation:** Users ask the AI Advisor questions; it answers with a deterministic facts bundle (grounded in the user's own prediction) plus retrieved, sourced passages from a small local corpus - no network call, no LLM.
 4. **Visualization:** The analytics engine processes the real dataset and generates live performance graphs and cohort comparisons.
 
+## Design system
+
+A technical-instrument aesthetic - loosely inspired by typesafe.ai's thesis that a decision is only as good as its stated confidence, not copied from its visuals, copy, or layout. Near-white background (`#FEFEFE`) and near-black text (`#1E1E1E`), zero border radius, 1px hairline borders instead of shadows, IBM Plex Sans for headings/prose and IBM Plex Mono for every number and data label (the numbers are the product), and a single saturated accent (`#2E4BFF`) reserved for stated decisions - insufficient-confidence abstentions render in muted gray instead, never dressed up as an answer. No emoji anywhere in the app itself. Defined once in `theme.py`, shared by `app.py` and `analytics.py` (including Plotly chart theming) so the whole app reads as one instrument, not three separately-styled pages.
+
 ## 🛠️ Tech Stack & Architecture
 
 - **Frontend:** Streamlit, Custom HTML/CSS, Plotly
@@ -92,11 +96,19 @@ The AI Advisor used to forward the raw question straight to Gemini with zero gro
 
 ## 📸 Demo
 
-No screenshot capture was available in this session, so here's what each tab actually does instead of a placeholder:
+Real screenshots at 375px width (mobile), captured from the running app via headless Chromium - not mockups.
 
-- **🚀 Predictor:** enter funding/founding/geography inputs, get a calibrated probability, a real percentile vs. the training cohort, SHAP-based signed reasons, a partial-dependence panel ("what would change this score"), and a gauge read against the training-cohort base rate.
-- **📊 Analytics:** success rate by country, primary category, funding band, and company age - computed live from the real processed dataset, sample sizes in every chart title, small groups suppressed.
-- **🤖 AI Advisor:** ask a question; get a deterministic facts bundle grounded in your last prediction plus sourced, cited passages retrieved locally - see "🧭 AI Advisor: Local Facts + Retrieval" below.
+**Predictor** - inputs, then a calibrated probability with its confidence band and a stated decision (or an honest "insufficient confidence" abstention below the threshold you set), signed SHAP contributions, and a sensitivity chart:
+
+<img src="docs/screenshots/predictor_form.png" width="375" alt="Predictor tab: input form">  <img src="docs/screenshots/predictor_result.png" width="375" alt="Predictor tab: calibrated result, SHAP bars, sensitivity chart">
+
+**Analytics** - every number computed live from the real dataset, sample sizes in every chart title:
+
+<img src="docs/screenshots/analytics.png" width="375" alt="Analytics tab: real dataset breakdowns">
+
+**Advisor** - a deterministic facts bundle grounded in the prediction above, plus sourced passages retrieved locally (no network call):
+
+<img src="docs/screenshots/advisor.png" width="375" alt="Advisor tab: facts bundle and retrieved sources">
 
 > **[Live Streamlit App: Startup Success Predictor](https://startup-success-predictor-d5u63hesntzh5ayhsm64ds.streamlit.app/)**
 
@@ -150,6 +162,7 @@ uvicorn api:app --reload
 ## 📁 Project Structure
 
 - `app.py`: Main Streamlit application, wired to `models/production/` (calibration + SHAP + percentile + local advisor).
+- `theme.py`: shared design tokens (colors, fonts, Plotly theme, CSS) for `app.py` and `analytics.py` - see "Design system" above.
 - `src/data/`: `schema.py` (column/label/leakage/funding-band constants), `download.py` (Kaggle fetch), `build.py` (labeling, leakage-aware feature engineering, time-based split).
 - `src/models/`: `train.py` (dummy/logreg/HGB baselines), `evaluate.py` (metrics/threshold/calibration helpers), `calibrate.py` (leak-free `CalibratedClassifierCV`), `explain.py` (cached SHAP explainer), `percentile.py` (empirical CDF), `confidence.py` (Wilson-interval confidence bands), `partial_dependence.py`.
 - `src/advisor/`: `facts.py` (Layer 1 deterministic facts core), `chunking.py` (documented markdown chunker), `retrieval.py` (TF-IDF index + MMR rerank), `response.py` (orchestration + the unimplemented generation seam).

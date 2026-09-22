@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+import theme
 from src.data import schema
 
 DATA_PATH = "data/processed/startups_features_v1.parquet"
@@ -35,15 +36,17 @@ def _bar_chart(df: pd.DataFrame, x: str, title: str, order: list[str] | None = N
         title=f"{title} (n={total_n:,})",
         labels={"success_rate": "Success rate"},
     )
-    fig.update_traces(texttemplate="n=%{text}", textposition="outside")
+    fig.update_traces(texttemplate="n=%{text}", textposition="outside", marker_color=theme.ACCENT)
     fig.update_yaxes(tickformat=".0%")
+    theme.apply_theme(fig)
     return fig
 
 
 def show_dashboard() -> None:
     """Renders the analytics dashboard from the real processed dataset - every
     number here is computed live, nothing is hand-typed."""
-    st.title("📊 Startup Analytics Dashboard")
+    st.header("Startup analytics")
+    st.caption("Every number below is computed live from the real processed dataset - nothing is hand-typed.")
 
     df = _load_dataset()
     overall = df["label"].mean()
@@ -62,7 +65,7 @@ def show_dashboard() -> None:
     by_funding = _grouped_success_rate(df.assign(funding_band=funding_band), "funding_band")
     st.plotly_chart(_bar_chart(by_funding, "funding_band", "Success rate by funding band", order=FUNDING_BIN_LABELS), use_container_width=True)
     st.caption(
-        "⚠️ `funding_total_usd` is measured at scrape time, after the outcome is known "
+        "Caveat: `funding_total_usd` is measured at scrape time, after the outcome is known "
         "(see DATA_CARD.md/MODEL_CARD.md's leakage finding). This is a correlation among "
         "resolved companies, not a lever a founder can causally pull by raising more."
     )
@@ -73,7 +76,7 @@ def show_dashboard() -> None:
     by_age = _grouped_success_rate(df.assign(age_band=age_band), "age_band")
     st.plotly_chart(_bar_chart(by_age, "age_band", "Success rate by company age", order=AGE_BIN_LABELS), use_container_width=True)
     st.caption(
-        "⚠️ Not leakage (age is known upfront), but largely mechanical: younger companies "
+        "Caveat: not leakage (age is known upfront), but largely mechanical: younger companies "
         "(at scrape time) have had less time to resolve to acquired/ipo at all, so this "
         "mirrors the same survivorship/censoring dynamic documented in DATA_CARD.md."
     )

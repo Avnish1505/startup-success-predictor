@@ -72,7 +72,9 @@ def render_facts_bundle(bundle: dict) -> str:
         lines.append("- Top signed contributions (SHAP, on the pre-calibration model):")
         for c in bundle["top_contributions"]:
             arrow = "+" if c["direction"] == "increases" else "-"
-            lines.append(f"  - {arrow} `{c['feature']}` = {c['value']} ({c['direction']} the score)")
+            value = c["value"]
+            value_str = f"{value:.2f}" if isinstance(value, float) else str(value)
+            lines.append(f"  - {arrow} `{c['feature']}` = {value_str} ({c['direction']} the score)")
 
     cohort = bundle["cohort"]
     if cohort:

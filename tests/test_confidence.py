@@ -51,3 +51,25 @@ def test_lookup_confidence_band_finds_containing_bin():
 def test_lookup_confidence_band_raises_on_empty_bands():
     with pytest.raises(ValueError):
         lookup_confidence_band(0.5, [])
+
+
+def test_lookup_confidence_band_shared_edge_resolves_to_upper_bin():
+    # A probability landing exactly on the shared edge between two bins must
+    # resolve to the upper (better) bin, not silently fall into the lower
+    # one - a real bug found via manual UI testing (probability 0.676 landed
+    # on a real bin edge and returned the wrong, much lower band).
+    bands = [
+        {"bin_lower": 0.0, "bin_upper": 0.5, "n": 100, "phat": 0.2, "ci_lower": 0.13, "ci_upper": 0.29},
+        {"bin_lower": 0.5, "bin_upper": 1.0, "n": 100, "phat": 0.8, "ci_lower": 0.71, "ci_upper": 0.87},
+    ]
+    lo, hi = lookup_confidence_band(0.5, bands)
+    assert (lo, hi) == (0.71, 0.87)
+
+
+def test_lookup_confidence_band_top_bin_is_closed_at_its_upper_edge():
+    bands = [
+        {"bin_lower": 0.0, "bin_upper": 0.5, "n": 100, "phat": 0.2, "ci_lower": 0.13, "ci_upper": 0.29},
+        {"bin_lower": 0.5, "bin_upper": 1.0, "n": 100, "phat": 0.8, "ci_lower": 0.71, "ci_upper": 0.87},
+    ]
+    lo, hi = lookup_confidence_band(1.0, bands)
+    assert (lo, hi) == (0.71, 0.87)

@@ -49,10 +49,22 @@ def compute_confidence_bands(y_true, y_proba, n_bins: int = 10) -> list[dict]:
 
 
 def lookup_confidence_band(probability: float, bands: list[dict]) -> tuple[float, float]:
+    """Bins are half-open [bin_lower, bin_upper), matching how
+    compute_confidence_bands() builds them, except the highest bin (by
+    bin_upper) which is closed at the top. Without this, a probability that
+    lands exactly on a shared edge between two adjacent bins would always
+    resolve to the earlier (lower, worse) bin - a real off-by-boundary bug
+    found via manual UI testing, not a hypothetical."""
     if not bands:
         raise ValueError("bands is empty - compute_confidence_bands() must run first")
+    highest_upper = max(b["bin_upper"] for b in bands)
     for b in bands:
-        if b["bin_lower"] <= probability <= b["bin_upper"]:
+        is_top_bin = b["bin_upper"] == highest_upper
+        if is_top_bin:
+            in_bin = b["bin_lower"] <= probability <= b["bin_upper"]
+        else:
+            in_bin = b["bin_lower"] <= probability < b["bin_upper"]
+        if in_bin:
             return (b["ci_lower"], b["ci_upper"])
     # probability outside all bins (shouldn't happen given edges span [0,1]) - clamp to nearest
     closest = min(bands, key=lambda b: min(abs(probability - b["bin_lower"]), abs(probability - b["bin_upper"])))
