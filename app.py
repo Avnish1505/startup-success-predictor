@@ -46,6 +46,7 @@ st.set_page_config(
 )
 
 st.markdown(theme.inject_css(), unsafe_allow_html=True)
+theme.register_plotly_template()
 
 calibrated_pipeline, base_pipeline, train_reference, category_options, population_stats, model_metadata = (
     load_production_artifacts()

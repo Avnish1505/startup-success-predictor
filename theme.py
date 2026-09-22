@@ -19,20 +19,41 @@ GOOGLE_FONTS_URL = (
     "family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
 )
 
-PLOTLY_LAYOUT = {
-    "font": {"family": f"{FONT_MONO}, monospace", "size": 12, "color": FG},
-    "paper_bgcolor": BG,
-    "plot_bgcolor": BG,
-    "xaxis": {"gridcolor": BORDER, "zerolinecolor": BORDER, "linecolor": BORDER},
-    "yaxis": {"gridcolor": BORDER, "zerolinecolor": BORDER, "linecolor": BORDER},
-    "margin": {"t": 36, "l": 8, "r": 8, "b": 8},
-    "title": {"font": {"family": f"{FONT_MONO}, monospace", "size": 13, "color": FG}},
-    "legend": {"font": {"family": f"{FONT_MONO}, monospace", "size": 11}},
-}
+# A global layout.font dict does NOT reliably cascade to per-axis tick/title
+# fonts in Plotly - confirmed by pixel-sampling a real rendered chart: axis
+# label text came out rgb(128,132,149), nowhere near the intended FG
+# rgb(30,30,30). Each axis needs its own explicit tickfont/title.font.
+_AXIS = dict(
+    color=FG, linecolor=FG, gridcolor=BORDER, zerolinecolor=BORDER,
+    showline=True, ticks="outside", tickcolor=FG,
+    tickfont=dict(color=FG, size=11, family=FONT_MONO),
+    title=dict(font=dict(color=FG, size=12, family=FONT_MONO)),
+)
+
+
+def register_plotly_template() -> None:
+    """Call once, before any chart is built (app.py does this at import
+    time). Sets pio.templates.default so every chart gets correct axis/tick
+    colors without needing apply_theme() called on it individually."""
+    import plotly.graph_objects as go
+    import plotly.io as pio
+
+    pio.templates["instrument"] = go.layout.Template(layout=dict(
+        font=dict(family=FONT_MONO, size=12, color=FG),
+        title=dict(font=dict(size=13, color=FG, family=FONT_MONO)),
+        paper_bgcolor=BG, plot_bgcolor=BG, colorway=[ACCENT],
+        xaxis=_AXIS, yaxis=_AXIS,
+        legend=dict(font=dict(color=FG, size=11, family=FONT_MONO)),
+        margin=dict(l=48, r=16, t=36, b=40),
+    ))
+    pio.templates.default = "instrument"
 
 
 def apply_theme(fig):
-    fig.update_layout(**PLOTLY_LAYOUT)
+    """Kept for call sites that want explicit margin control after
+    construction - color/font correctness now comes from the registered
+    default template (register_plotly_template()), not from this call."""
+    fig.update_layout(margin={"t": 36, "l": 8, "r": 8, "b": 8})
     return fig
 
 
