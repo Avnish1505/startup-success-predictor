@@ -38,7 +38,17 @@ Unlike standard ML projects that stop at a binary "Pass/Fail" prediction, this a
 
 ## Design system
 
-A technical-instrument aesthetic - loosely inspired by typesafe.ai's thesis that a decision is only as good as its stated confidence, not copied from its visuals, copy, or layout. Near-white background (`#FEFEFE`) and near-black text (`#1E1E1E`), zero border radius, 1px hairline borders instead of shadows, IBM Plex Sans for headings/prose and IBM Plex Mono for every number and data label (the numbers are the product), and a single saturated accent (`#2E4BFF`) reserved for stated decisions - insufficient-confidence abstentions render in muted gray instead, never dressed up as an answer. No emoji anywhere in the app itself. Defined once in `theme.py`, shared by `app.py` and `analytics.py` (including Plotly chart theming) so the whole app reads as one instrument, not three separately-styled pages.
+A technical-instrument aesthetic - loosely inspired by typesafe.ai's thesis that a decision is only as good as its stated confidence, not copied from its visuals, copy, or layout. Near-white background (light) / near-black background (dark), zero border radius, 1px hairline borders instead of shadows, IBM Plex Sans for headings/prose and IBM Plex Mono for every number and data label (the numbers are the product), and a single saturated accent (`#3355FF`, unchanged across both modes) reserved for stated decisions - insufficient-confidence abstentions render in muted gray instead, never dressed up as an answer. No emoji anywhere in the app itself. Defined once in `theme.py`, shared by `app.py` and `analytics.py` (including Plotly chart theming) so the whole app reads as one instrument, not three separately-styled pages, in either theme.
+
+### Theming - light and dark, without trusting a single unreliable signal
+
+`st.context.theme.type` (Streamlit's built-in theme signal) doesn't reliably trigger a rerun on an OS theme change and can be wrong on the first script run (documented Streamlit issues #15287, #11920) - so this app doesn't depend on it alone. Three layers instead:
+
+1. **Pure CSS** (`theme.inject_css()`, no Python involvement in the color values) - every color is a `--token` CSS custom property, declared three times: a light default, an `@media (prefers-color-scheme: dark)` block, and an explicit `[data-theme="dark"]` override that always wins over the OS setting. Correct on first paint before any Python code runs.
+2. **Theme-agnostic Plotly figures** - charts render with a transparent background (`paper_bgcolor`/`plot_bgcolor`), so the CSS page background always shows through, and axis ticks/titles/lines use one muted gray (`#898781`) that's identical in both modes and clears contrast against both surfaces (verified: 3.56:1 light, 5.26:1 dark) - legible even if the theme signal briefly lags.
+3. **An app-owned sidebar toggle** - seeded once from `st.context.theme.type` (best-effort, wrapped in try/except), then owned entirely by `st.session_state`. Drives both the registered Plotly template (rebuilt and cached per mode) and a `data-theme` attribute stamped onto the page via a small same-origin script, so layers 1 and 2 can never disagree once the app has rendered once.
+
+**A real interaction worth documenting:** this app hides Streamlit's own native header/menu for the flat instrument look, so end users have no way to reach Streamlit's *built-in* theme toggle at all - the only control is this app's own sidebar radio. The one residual edge case is a *stale* browser-stored Streamlit theme preference from a different session (e.g. a different local app on the same port history) - verified live: even then, the app stays fully self-consistent (chrome and charts always agree with each other, seeded from whatever Streamlit itself resolves `st.context.theme.type` to), and clicking this app's own Light/Dark control immediately overrides it in one interaction.
 
 ## 🛠️ Tech Stack & Architecture
 
@@ -96,19 +106,21 @@ The AI Advisor used to forward the raw question straight to Gemini with zero gro
 
 ## 📸 Demo
 
-Real screenshots at 375px width (mobile), captured from the running app via headless Chromium - not mockups.
+Real screenshots at 375px width (mobile), captured from the running app via headless Chromium - not mockups. Light mode is the default seed; dark mode below is the same app with the sidebar Theme control (or the OS `prefers-color-scheme`) set to Dark - same data, same layout, same code path.
 
 **Predictor** - inputs, then a calibrated probability with its confidence band and a stated decision (or an honest "insufficient confidence" abstention below the threshold you set), signed SHAP contributions, and a sensitivity chart:
 
-<img src="docs/screenshots/predictor_form.png" width="375" alt="Predictor tab: input form">  <img src="docs/screenshots/predictor_result.png" width="375" alt="Predictor tab: calibrated result, SHAP bars, sensitivity chart">
+<img src="docs/screenshots/predictor_form.png" width="375" alt="Predictor tab: input form, light mode">  <img src="docs/screenshots/predictor_result.png" width="375" alt="Predictor tab: calibrated result, SHAP bars, sensitivity chart, light mode">
+
+<img src="docs/screenshots/dark/predictor_form.png" width="375" alt="Predictor tab: input form, dark mode">  <img src="docs/screenshots/dark/predictor_result.png" width="375" alt="Predictor tab: calibrated result, SHAP bars, sensitivity chart, dark mode">
 
 **Analytics** - every number computed live from the real dataset, sample sizes in every chart title:
 
-<img src="docs/screenshots/analytics.png" width="375" alt="Analytics tab: real dataset breakdowns">
+<img src="docs/screenshots/analytics.png" width="375" alt="Analytics tab: real dataset breakdowns, light mode">  <img src="docs/screenshots/dark/analytics.png" width="375" alt="Analytics tab: real dataset breakdowns, dark mode">
 
 **Advisor** - a deterministic facts bundle grounded in the prediction above, plus sourced passages retrieved locally (no network call):
 
-<img src="docs/screenshots/advisor.png" width="375" alt="Advisor tab: facts bundle and retrieved sources">
+<img src="docs/screenshots/advisor.png" width="375" alt="Advisor tab: facts bundle and retrieved sources, light mode">  <img src="docs/screenshots/dark/advisor.png" width="375" alt="Advisor tab: facts bundle and retrieved sources, dark mode">
 
 > **[Live Streamlit App: Startup Success Predictor](https://startup-success-predictor-d5u63hesntzh5ayhsm64ds.streamlit.app/)**
 
