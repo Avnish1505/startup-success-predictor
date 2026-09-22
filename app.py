@@ -84,6 +84,7 @@ components.html(
 )
 
 theme.register_plotly_template(st.session_state["app_theme"])
+active_tokens = theme.TOKENS[st.session_state["app_theme"]]
 
 models, category_options, population_stats, region_by_country = load_production_artifacts()
 clean_meta, full_meta = models["clean"]["metadata"], models["full"]["metadata"]
@@ -213,14 +214,22 @@ with tab1:
             st.session_state.prediction_shap_contributions = contributions
 
             shap_df = pd.DataFrame(contributions).sort_values("shap_value")
-            colors = [theme.ACCENT if v > 0 else theme.FG for v in shap_df["shap_value"]]
+            colors = [active_tokens["accent"] if v > 0 else active_tokens["ink"] for v in shap_df["shap_value"]]
+            # Text color must match each bar's own fill, not a single shared
+            # value: accent is a fixed color across modes, so white text on it
+            # (verified 5.4:1 contrast both modes) is always right; the ink-
+            # colored bars flip between near-black (light) and white (dark),
+            # so their text needs the mode's own opposite (surface) to follow -
+            # a single textfont_color could not satisfy both at once (measured
+            # surface-on-accent in dark mode at only 3.50:1).
+            text_colors = ["#ffffff" if v > 0 else active_tokens["surface"] for v in shap_df["shap_value"]]
             shap_fig = go.Figure(go.Bar(
                 x=shap_df["shap_value"], y=shap_df["feature"], orientation="h",
                 marker_color=colors, text=[f"{v:+.3f}" for v in shap_df["shap_value"]],
-                textposition="inside", insidetextanchor="end", textfont_color=theme.BG,
+                textposition="inside", insidetextanchor="end", textfont_color=text_colors,
             ))
             shap_fig.update_traces(textfont_size=10)
-            shap_fig.add_vline(x=0, line_color=theme.BORDER, line_width=1)
+            shap_fig.add_vline(x=0, line_color=active_tokens["axis"], line_width=1)
             shap_fig.update_layout(
                 height=260, showlegend=False,
                 yaxis={"title": "", "automargin": True},
@@ -252,12 +261,12 @@ with tab1:
             if pdp_feature in population_stats["numeric_ranges"]:
                 pdp_fig = px.line(pdp_df, x=pdp_feature, y="predicted_probability", markers=True,
                                    title=f"probability vs. {pdp_feature} (1st-99th pct.)")
-                pdp_fig.update_traces(line_color=theme.ACCENT, marker_color=theme.ACCENT)
-                pdp_fig.add_vline(x=current_value, line_dash="dash", line_color=theme.FG, annotation_text="current")
+                pdp_fig.update_traces(line_color=active_tokens["accent"], marker_color=active_tokens["accent"])
+                pdp_fig.add_vline(x=current_value, line_dash="dash", line_color=active_tokens["ink"], annotation_text="current")
             else:
                 pdp_fig = px.bar(pdp_df, x=pdp_feature, y="predicted_probability",
                                   title=f"probability vs. {pdp_feature} (top {len(grid)} by frequency)")
-                pdp_fig.update_traces(marker_color=theme.ACCENT)
+                pdp_fig.update_traces(marker_color=active_tokens["accent"])
             pdp_fig.update_yaxes(tickformat=".0%", range=[0, 1])
             theme.apply_theme(pdp_fig)
             st.plotly_chart(pdp_fig, use_container_width=True)
@@ -267,14 +276,14 @@ with tab1:
             gauge_fig = go.Figure(go.Indicator(
                 mode="gauge+number",
                 value=prob,
-                number={"suffix": "%", "font": {"family": theme.FONT_MONO, "color": theme.FG}},
+                number={"suffix": "%", "font": {"family": theme.FONT_MONO, "color": active_tokens["ink"]}},
                 title={"text": "vs. training-cohort base rate", "font": {"family": theme.FONT_MONO, "size": 13}},
                 gauge={
                     "axis": {"range": [0, 100], "tickfont": {"family": theme.FONT_MONO}},
-                    "bar": {"color": theme.ACCENT},
-                    "bgcolor": theme.BG,
-                    "bordercolor": theme.BORDER,
-                    "threshold": {"line": {"color": theme.FG, "width": 2}, "thickness": 0.9, "value": base_rate},
+                    "bar": {"color": active_tokens["accent"]},
+                    "bgcolor": active_tokens["surface"],
+                    "bordercolor": active_tokens["axis"],
+                    "threshold": {"line": {"color": active_tokens["ink"], "width": 2}, "thickness": 0.9, "value": base_rate},
                 },
             ))
             theme.apply_theme(gauge_fig)

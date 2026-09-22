@@ -28,6 +28,13 @@ TOKENS: dict[str, dict[str, str]] = {
 # legible even if theme detection lags by one interaction.
 MUTED = "#898781"
 
+# One shared accent for both modes (clears 3:1 against both surfaces:
+# 5.36:1 light, 3.50:1 dark, verified) - do not introduce a second. Call
+# sites that build a figure without threading `mode` through (e.g.
+# analytics.py, which has no theme awareness of its own) can reference this
+# directly instead of theme.TOKENS[mode]["accent"].
+ACCENT = "#3355FF"
+
 # Validated (light, dark) pairs for a chart that ever needs more than the
 # single shared accent. Fixed order, never cycled/reassigned past slot 3.
 SERIES_COLORS: dict[str, list[str]] = {

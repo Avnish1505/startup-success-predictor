@@ -43,6 +43,12 @@ def test_accent_is_identical_in_both_modes():
     assert theme.TOKENS["light"]["accent"] == theme.TOKENS["dark"]["accent"]
 
 
+def test_module_level_accent_matches_tokens():
+    # analytics.py has no theme awareness of its own and references
+    # theme.ACCENT directly - it must never drift from TOKENS[mode]["accent"].
+    assert theme.ACCENT == theme.TOKENS["light"]["accent"] == theme.TOKENS["dark"]["accent"]
+
+
 @pytest.mark.parametrize("mode", ["light", "dark"])
 def test_ink_clears_body_text_contrast(mode):
     tokens = theme.TOKENS[mode]
