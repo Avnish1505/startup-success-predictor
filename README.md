@@ -117,17 +117,17 @@ uvicorn api:app --reload
 - `src/data/`: `schema.py` (column/label/leakage constants), `download.py` (Kaggle fetch), `build.py` (labeling, leakage-aware feature engineering, time-based split).
 - `src/models/`: `train.py` (dummy/logreg/HGB baselines), `evaluate.py` (metrics/threshold/calibration helpers), `calibrate.py` (leak-free `CalibratedClassifierCV`), `explain.py` (cached SHAP explainer), `percentile.py` (empirical CDF).
 - `DATA_CARD.md` / `MODEL_CARD.md`: real measured numbers, leakage findings, and limitations.
-- `predictor.py` / `startup_model.pkl` / `api.py`: legacy 4-feature toy model, still used by the standalone FastAPI backend only (`api.py`) - **not** the Streamlit app as of this version.
+- `api.py`: production FastAPI backend on the calibrated pipeline (Pydantic validation, lifespan-loaded model/explainer/ECDF, `/predict`, `/predict/batch`, `/health`, `/model-info`). See `tests/test_api.py`.
+- `predictor.py` / `startup_model.pkl`: legacy 4-feature toy model, no longer used by either `app.py` or `api.py` as of this version - kept only as an artifact of the project's earlier state.
 - `advisor_ai.py`: Gemini AI integration with fallback mechanisms.
 - `analytics.py`: Data visualization and dashboard metrics.
 - `requirements.txt`: Python dependencies.
 
 ## 🚀 Future Scope
 
-- Rewire `api.py` onto the same calibrated pipeline `app.py` now uses (currently still serves the legacy 4-feature toy model).
 - Hyperparameter-tune `HistGradientBoostingClassifier` (Step 2 baselines were intentionally untuned).
 - Add authentication/login for personalized user dashboards.
-- Expand API functionality to include batch predictions.
+- Validate the Dockerfile with an actual `docker build`/`docker run` (this session's environment had no running Docker daemon to test against).
 
 ---
 *Built with ❤️ by [Avnish Singh](https://github.com/avnish1505)*
